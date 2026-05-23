@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Oasis-AI Mobile</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --glass-rgb: 255, 255, 255;
+            --glass-opacity: 0.05;
+            --glass-blur: 20px;
+            --glass-surface: rgba(var(--glass-rgb), var(--glass-opacity));
+            --surface-1: rgba(255, 255, 255, 0.03);
+            --surface-2: rgba(255, 255, 255, 0.06);
+            --surface-3: rgba(255, 255, 255, 0.12);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --input-focus: rgba(0, 0, 0, 0.6);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --primary: #3b82f6;
+            --primary-rgb: 59, 130, 246;
+            --secondary: #10b981;
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 10%, rgba(var(--primary-rgb), 0.12), transparent 50%);
+            color: var(--text-main);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #particlesCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .app-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 20px 100px 20px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .section {
+            display: none;
+            animation: softPop 0.4s var(--ease-out-expo) forwards;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes softPop {
+            0% {
+                opacity: 0;
+                transform: translateY(12px) scale(0.99);
+                filter: blur(4px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(var(--bg-dark), 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .glass-panel {
+            background: var(--glass-surface);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 24px var(--shadow-color);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .input-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .input-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+            background: var(--input-focus);
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: var(--surface-2);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sub-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sub-tabs .btn {
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            padding: 8px 14px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: rgba(var(--bg-dark), 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 999;
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            font-weight: 600;
+            gap: 4px;
+            width: 25%;
+            transition: color 0.2s ease;
+        }
+
+        .nav-tab i {
+            font-size: 1.4rem;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab.active i {
+            transform: translateY(-2px);
+        }
+
+        .task-card {
+            background: var(--surface-1);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-card.done span {
+            text-decoration: line-through;
+            opacity: 0.4;
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        #wbCanvas {
+            background: #121214;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            touch-action: none;
+            width: 100%;
+            height: 52vh;
+        }
+
+        .pt-scroll-container {
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pt-grid {
+            display: grid;
+            grid-template-columns: repeat(18, 48px);
+            grid-template-rows: repeat(10, 48px);
+            gap: 4px;
+            width: max-content;
+        }
+
+        .pt-el {
+            background: var(--surface-1);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.65rem;
+            position: relative;
+        }
+
+        .pt-el .sym {
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+
+        .pt-el .num {
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            font-size: 0.5rem;
+            opacity: 0.6;
+        }
+
+        .cat-nonmetal {
+            border-bottom: 3px solid #2dd4bf;
+        }
+
+        .cat-noble {
+            border-bottom: 3px solid #a78bfa;
+        }
+
+        .cat-alkali {
+            border-bottom: 3px solid #f87171;
+        }
+
+        .cat-alkaline {
+            border-bottom: 3px solid #fb923c;
+        }
+
+        .cat-metalloid {
+            border-bottom: 3px solid #4ade80;
+        }
+
+        .cat-transition {
+            border-bottom: 3px solid #60a5fa;
+        }
+
+        .cat-post {
+            border-bottom: 3px solid #818cf8;
+        }
+
+        .cat-lanthanide {
+            border-bottom: 3px solid #f472b6;
+        }
+
+        .cat-actinide {
+            border-bottom: 3px solid #c084fc;
+        }
+
+        .cat-unknown {
+            border-bottom: 3px solid #71717a;
+        }
+
+        .reac-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: var(--surface-1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .img-search-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .img-search-card {
+            background: var(--surface-1);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .img-search-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .img-search-card span {
+            font-size: 0.75rem;
+            padding: 6px 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .settings-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .settings-overlay.active {
+            transform: translateY(0);
+        }
+
+        .setting-row {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .coming-soon-badge {
+            font-size: 0.65rem;
+            background: #ea580c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
+        body.theme-water {
+            background-image: linear-gradient(45deg, #001220, #003b59, #03045e);
+        }
+
+        body.reduce-motion * {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        body.font-large {
+            font-size: 19px;
+        }
+
+        body.compact-mode {
+            --radius-xl: 12px;
+            --radius-lg: 8px;
+            --radius-md: 6px;
+        }
+
+        body.simple-bg {
+            background-image: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="particlesCanvas"></canvas>
+
+    <div class="mobile-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="ph-fill ph-sparkle" style="color:var(--primary); font-size:1.3rem;"></i>
+            <span style="font-weight: 800; font-size: 1.1rem; letter-spacing:-0.5px;">OASIS AI</span>
+        </div>
+        <button class="btn btn-ghost" onclick="toggleSettings()" style="padding: 8px;">
+            <img src="assets/Settings.png" style="width:23px; height:23px; object-fit:contain;">
+        </button>
+    </div>
+
+    <main class="app-container" id="mainScroll">
+
+        <section id="dashboard" class="section active">
+            <div style="position:relative; margin-bottom: 16px;">
+                <i class="ph ph-magnifying-glass"
+                    style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                <input type="text" id="dashSearchInput" class="input-box" placeholder="Type an app name or query web..."
+                    style="padding-left:42px;" onkeypress="dashSearchEnter(event)">
+            </div>
+
+            <div class="glass-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="margin:0; font-size:1rem; font-weight:700;">Task Operations Matrix</h3>
+                    <button class="btn btn-primary" onclick="addTask()" style="padding:6px 12px; font-size:0.75rem;"><i
+                            class="ph ph-plus"></i> Add</button>
+                </div>
+                <div id="taskListContainer"></div>
+            </div>
+        </section>
+
+        <section id="whiteboard" class="section">
+            <div class="sub-tabs">
+                <button class="btn btn-primary" onclick="setWbTool('draw', this)"><i class="ph ph-pencil"></i> Draw
+                    Vector</button>
+                <button class="btn btn-ghost" onclick="setWbTool('erase', this)"><i class="ph ph-eraser"></i>
+                    Erase</button>
+                <button class="btn btn-ghost" onclick="clearWb()"><i class="ph ph-trash" style="color:#ef4444"></i>
+                    Clear Matrix</button>
+            </div>
+            <canvas id="wbCanvas"></canvas>
+        </section>
+
+        <section id="lab" class="section">
+            <div class="sub-tabs" id="labTabsContainer">
+                <button class="btn btn-primary" onclick="switchLabSubTab('elements', this)">Element Grid</button>
+                <button class="btn btn-ghost" onclick="switchLabSubTab('desk', this)">AI Reaction Desk</button>
+                <button class="btn btn-ghost" onclick="switchLabSubTab('reac', this)">Reactivity Series</button>
+                <button class="btn btn-ghost" onclick="switchLabSubTab('gas', this)">Gas Laws</button>
+                <button class="btn btn-ghost" onclick="switchLabSubTab('ph', this)">pH Engine</button>
+            </div>
+
+            <div id="lab-elements" class="lab-sub-section">
+                <div class="pt-scroll-container">
+                    <div class="pt-grid" id="ptGrid"></div>
+                </div>
+                <div id="elementInspector" class="glass-panel" style="margin-top:16px; display:none;">
+                    <h4 id="inspectName" style="margin:0 0 4px 0; color:var(--primary)">Select an Element</h4>
+                    <p style="margin:0; font-size:0.85rem; color:var(--text-muted)">Mass: <span
+                            id="inspectMass">-</span> g/mol | Number: <span id="inspectNum">-</span></p>
+                </div>
+            </div>
+
+            <div id="lab-desk" class="lab-sub-section" style="display:none;">
+                <div class="glass-panel">
+                    <h4 style="margin:0 0 10px 0; font-size:0.95rem;">AI Reaction Equation Desk</h4>
+                    <input type="text" class="input-box" id="chemReactants"
+                        placeholder="Reactants formula (e.g., HCl + NaOH)" style="margin-bottom:12px;">
+                    <button class="btn btn-primary" style="width:100%" onclick="predictReaction()">Compute Reaction
+                        Sequence</button>
+                    <div id="reactResult"
+                        style="margin-top:12px; font-weight:600; font-family:var(--font-mono); font-size:0.85rem; color:var(--secondary); word-break:break-all;">
+                    </div>
+                </div>
+            </div>
+
+            <div id="lab-reac" class="lab-sub-section" style="display:none;">
+                <div class="glass-panel" style="max-height:50vh; overflow-y:auto;" id="reactivityContainer"></div>
+            </div>
+
+            <div id="lab-gas" class="lab-sub-section" style="display:none;">
+                <div class="glass-panel">
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0;">Ideal Gas validation equation
+                        ($P \cdot V = n \cdot R \cdot T$). Leave one parameter blank.</p>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <input type="number" id="gasP" class="input-box" placeholder="Pressure (P) in atm">
+                        <input type="number" id="gasV" class="input-box" placeholder="Volume (V) in L">
+                        <input type="number" id="gasN" class="input-box" placeholder="Amount (n) in moles">
+                        <input type="number" id="gasT" class="input-box" placeholder="Temperature (T) in K">
+                        <button class="btn btn-primary" onclick="calcGasLaw()">Solve Variable</button>
+                    </div>
+                    <div id="gasRes"
+                        style="margin-top:12px; font-weight:700; text-align:center; color:var(--secondary);"></div>
+                </div>
+            </div>
+
+            <div id="lab-ph" class="lab-sub-section" style="display:none;">
+                <div class="glass-panel">
+                    <input type="number" id="phVal" class="input-box" placeholder="Enter pH value (0 - 14)"
+                        style="margin-bottom:12px;">
+                    <button class="btn btn-primary" style="width:100%" onclick="calcPh()">Process pH Metrics</button>
+                    <div id="phMetricsResult" style="margin-top:12px; font-size:0.85rem; line-height:1.5;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="study" class="section">
+            <div style="position:relative; margin-bottom:16px;">
+                <i class="ph ph-books"
+                    style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted)"></i>
+                <input type="text" class="input-box" id="wikiSearch" placeholder="Search knowledge base..."
+                    style="padding-left:42px;" onkeypress="if(event.key==='Enter') searchKnowledgeBase()">
+            </div>
+            <div class="sub-tabs" id="kbTabsContainer">
+                <button class="btn btn-primary" onclick="setSearchMode('wikipedia', this)">Wiki</button>
+                <button class="btn btn-ghost" onclick="setSearchMode('academic', this)">Academic</button>
+                <button class="btn btn-ghost" onclick="setSearchMode('web', this)">Oasis Web</button>
+            </div>
+
+            <div id="webSearchFilters" style="margin-bottom: 12px; display: none; align-items: center; gap: 10px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted)">Format:</span>
+                <label
+                    style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; cursor: pointer;">
+                    <input type="radio" name="webSearchType" value="text" checked
+                        onchange="toggleWebSearchType('text')"> Text Articles
+                </label>
+                <label
+                    style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; cursor: pointer; margin-left: 10px;">
+                    <input type="radio" name="webSearchType" value="image" onchange="toggleWebSearchType('image')">
+                    Image Stream
+                </label>
+            </div>
+
+            <div id="wikiResults" style="display:flex; flex-direction:column; gap:12px;"></div>
+        </section>
+
+    </main>
+
+    <div class="settings-overlay" id="settingsOverlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <h2 style="margin:0; font-size:1.3rem;">System Preferences</h2>
+            <button class="btn btn-ghost" onclick="toggleSettings()" style="padding:8px;"><i class="ph ph-x"
+                    style="font-size:1.2rem;"></i></button>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-label">Google Custom Search Engine Access</div>
+            <input type="password" class="input-box" id="settingGoogleApiKey" placeholder="Google API Key"
+                oninput="saveApiKey('m_oasis_google_key', this.value)" style="margin-bottom:8px;">
+            <input type="text" class="input-box" id="settingGoogleCx" placeholder="Search Engine ID (CX)"
+                oninput="saveApiKey('m_oasis_google_cx', this.value)">
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-label">Gemini Core API Authentication</div>
+            <input type="password" class="input-box" id="settingGeminiApiKey" placeholder="Gemini API Key"
+                oninput="saveApiKey('m_oasis_gemini_key', this.value)">
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-label">Font Mapping</div>
+            <select class="input-box" id="settingFont" onchange="updateFont(this.value)">
+                <option value="'Plus Jakarta Sans', sans-serif">Jakarta Modern</option>
+                <option value="system-ui, -apple-system, sans-serif">System UI</option>
+                <option value="'JetBrains Mono', monospace">JetBrains Code</option>
+            </select>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-label">Global Theme Engine</div>
+            <select class="input-box" onchange="setAppTheme(this.value)">
+                <option value="dark">🌙 Dark Slate</option>
+                <option value="light">☀️ Crisp Light</option>
+                <option value="midnight">🌌 Deep Cosmic</option>
+                <option value="water">💧 Deep Sea</option>
+            </select>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-label">Visual Parameters</div>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Nodes Animation Particles</span>
+                    <input type="checkbox" id="checkParticles" checked onchange="toggleParticles(this.checked)"
+                        style="width:18px; height:18px;">
+                </label>
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Clear Processing Gradients</span>
+                    <input type="checkbox" id="checkBg" onchange="toggleSimpleBg(this.checked)"
+                        style="width:18px; height:18px;">
+                </label>
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Mitigate Interface Physics</span>
+                    <input type="checkbox" id="checkAnim" onchange="toggleAnim(this.checked)"
+                        style="width:18px; height:18px;">
+                </label>
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Magnified Typography Matrix</span>
+                    <input type="checkbox" id="checkFont" onchange="toggleLargeFont(this.checked)"
+                        style="width:18px; height:18px;">
+                </label>
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Condensed Architecture Geometry</span>
+                    <input type="checkbox" id="checkCompact" onchange="toggleCompact(this.checked)"
+                        style="width:18px; height:18px;">
+                </label>
+            </div>
+        </div>
+
+        <div class="setting-row" style="opacity:0.6;">
+            <div class="setting-label">Cloud Sync Engine <span class="coming-soon-badge">Coming Soon</span></div>
+            <input type="text" class="input-box" disabled placeholder="Firebase Pipeline Locked">
+        </div>
+        <div class="setting-row" style="opacity:0.6;">
+            <div class="setting-label">Sub-OS Environments <span class="coming-soon-badge">Coming Soon</span></div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">Arcade Environment, Physics Sandbox, Schedule
+                Engine, and Financial tracking elements are deferred.</div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a class="nav-tab active" onclick="nav('dashboard', this)">
+            <img src="assets/sidebar icons/dashboard.png" style="width:25px; height:25px; object-fit:contain;">
+            <span>Dashboard</span>
+        </a>
+        <a class="nav-tab" onclick="nav('whiteboard', this)">
+            <img src="assets/sidebar icons/whiteboard.png" style="width:25px; height:25px; object-fit:contain;">
+            <span>Board</span>
+        </a>
+        <a class="nav-tab" onclick="nav('lab', this)">
+            <img src="assets/sidebar icons/chemistry.png" style="width:25px; height:25px; object-fit:contain;">
+            <span>Chem Lab</span>
+        </a>
+        <a class="nav-tab" onclick="nav('study', this)">
+            <img src="assets/sidebar icons/knowledge.png" style="width:25px; height:25px; object-fit:contain;">
+            <span>Knowledge</span>
+        </a>
+    </nav>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        let tasks = JSON.parse(localStorage.getItem('m_oasis_tasks')) || [
+            { id: 1, text: "Try launching an app by typing 'spotify' or 'youtube' in the dashboard.", status: "todo" },
+            { id: 2, text: "Switch search modes or formats to view instant refreshing updates.", status: "todo" }
+        ];
+        let currentSearchMode = 'wikipedia';
+        let webSearchFormat = 'text';
+
+        let googleApiKey = localStorage.getItem('m_oasis_google_key') || '';
+        let googleCx = localStorage.getItem('m_oasis_google_cx') || '';
+        let geminiApiKey = localStorage.getItem('m_oasis_gemini_key') || '';
+
+        function saveApiKey(storageKey, val) {
+            const trimmed = val.trim();
+            localStorage.setItem(storageKey, trimmed);
+            if (storageKey === 'm_oasis_google_key') googleApiKey = trimmed;
+            if (storageKey === 'm_oasis_google_cx') googleCx = trimmed;
+            if (storageKey === 'm_oasis_gemini_key') geminiApiKey = trimmed;
+        }
+
+        // --- Intent Launcher Routing Subsystem ---
+        const appIntentMatrix = {
+            'youtube': { url: 'vnd.youtube://', fallback: 'https://youtube.com' },
+            'spotify': { url: 'spotify://', fallback: 'https://open.spotify.com' },
+            'discord': { url: 'discord://', fallback: 'https://discord.com' },
+            'notion': { url: 'notion://', fallback: 'https://notion.so' },
+            'canvas': { url: 'canvas-student://', fallback: 'https://canvas.instructure.com' },
+            'drive': { url: 'googledrive://', fallback: 'https://drive.google.com' },
+            'gmail': { url: 'googlegmail://', fallback: 'https://mail.google.com' },
+            'calendar': { url: 'googlecalendar://', fallback: 'https://calendar.google.com' },
+            'maps': { url: 'googlemaps://', fallback: 'https://maps.google.com' },
+            'calculator': { url: 'intent://apps/#Intent;scheme=calculator;end', fallback: 'https://www.google.com/search?q=calculator' },
+            'chatgpt': { url: 'chatgpt://', fallback: 'https://chatgpt.com' },
+            'translate': { url: 'googletranslate://', fallback: 'https://translate.google.com' },
+            'google': { url: 'googlechrome://', fallback: 'https://google.com' }
+        };
+
+        function evaluateAppLaunchIntent(inputStr) {
+            const cleanKey = inputStr.trim().toLowerCase();
+            if (appIntentMatrix[cleanKey]) {
+                const app = appIntentMatrix[cleanKey];
+                const start = Date.now();
+                window.location.href = app.url;
+
+                setTimeout(() => {
+                    if (Date.now() - start < 1500) {
+                        window.open(app.fallback, '_blank');
+                    }
+                }, 800);
+                return true;
+            }
+            return false;
+        }
+
+        function nav(sectionId, element) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
+            $(sectionId).classList.add('active');
+            element.classList.add('active');
+            if (sectionId === 'whiteboard') setTimeout(resizeWbCanvas, 50);
+            if (sectionId === 'lab') {
+                renderPeriodicTable();
+                renderFullReactivitySeries();
+            }
+        }
+
+        function toggleSettings() {
+            $('settingsOverlay').classList.toggle('active');
+            if ($('settingsOverlay').classList.contains('active')) {
+                $('settingGoogleApiKey').value = googleApiKey;
+                $('settingGoogleCx').value = googleCx;
+                $('settingGeminiApiKey').value = geminiApiKey;
+            }
+        }
+
+        function dashSearchEnter(e) {
+            if (e.key === 'Enter') {
+                const q = $('dashSearchInput').value.trim();
+                if (!q) return;
+
+                if (evaluateAppLaunchIntent(q)) {
+                    $('dashSearchInput').value = '';
+                    return;
+                }
+
+                $('wikiSearch').value = q;
+                nav('study', document.querySelectorAll('.nav-tab')[3]);
+                searchKnowledgeBase();
+            }
+        }
+
+        // --- Whiteboard Sketch Core ---
+        const wbCanvas = $('wbCanvas'); const wbCtx = wbCanvas.getContext('2d'); let isDrawing = false, wbTool = 'draw';
+        function resizeWbCanvas() {
+            wbCanvas.width = wbCanvas.parentElement.clientWidth; wbCanvas.height = window.innerHeight * 0.52;
+            wbCtx.lineCap = 'round'; wbCtx.lineWidth = 4; updateCanvasToolStyles();
+        }
+        function setWbTool(tool, btn) {
+            wbTool = tool; const container = btn.parentElement;
+            container.querySelectorAll('.btn').forEach(b => { b.className = 'btn btn-ghost'; });
+            btn.className = 'btn btn-primary'; updateCanvasToolStyles();
+        }
+        function updateCanvasToolStyles() {
+            if (wbTool === 'draw') { wbCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6'; wbCtx.lineWidth = 4; }
+            else { wbCtx.strokeStyle = '#121214'; wbCtx.lineWidth = 24; }
+        }
+        function clearWb() { if (confirm("Flush drawing matrix?")) wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height); }
+        function getTouchPos(e) {
+            const rect = wbCanvas.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX; const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - rect.left, y: cy - rect.top };
+        }
+        function startDraw(e) { isDrawing = true; const pos = getTouchPos(e); wbCtx.beginPath(); wbCtx.moveTo(pos.x, pos.y); }
+        function drawMove(e) { if (!isDrawing) return; e.preventDefault(); const pos = getTouchPos(e); wbCtx.lineTo(pos.x, pos.y); wbCtx.stroke(); }
+        wbCanvas.addEventListener('mousedown', startDraw); wbCanvas.addEventListener('mousemove', drawMove); window.addEventListener('mouseup', () => isDrawing = false);
+        wbCanvas.addEventListener('touchstart', startDraw, { passive: false }); wbCanvas.addEventListener('touchmove', drawMove, { passive: false }); window.addEventListener('touchend', () => isDrawing = false);
+
+        // --- Complete 118 Elements DataSet ---
+        const ptData = [
+            { n: 1, s: "H", na: "Hydrogen", m: "1.008", c: 1, r: 1, cat: "nonmetal" },
+            { n: 2, s: "He", na: "Helium", m: "4.0026", c: 18, r: 1, cat: "noble" },
+            { n: 3, s: "Li", na: "Lithium", m: "6.94", c: 1, r: 2, cat: "alkali" },
+            { n: 4, s: "Be", na: "Beryllium", m: "9.0122", c: 2, r: 2, cat: "alkaline" },
+            { n: 5, s: "B", na: "Boron", m: "10.81", c: 13, r: 2, cat: "metalloid" },
+            { n: 6, s: "C", na: "Carbon", m: "12.011", c: 14, r: 2, cat: "nonmetal" },
+            { n: 7, s: "N", na: "Nitrogen", m: "14.007", c: 15, r: 2, cat: "nonmetal" },
+            { n: 8, s: "O", na: "Oxygen", m: "15.999", c: 16, r: 2, cat: "nonmetal" },
+            { n: 9, s: "F", na: "Fluorine", m: "18.998", c: 17, r: 2, cat: "nonmetal" },
+            { n: 10, s: "Ne", na: "Neon", m: "20.180", c: 18, r: 2, cat: "noble" },
+            { n: 11, s: "Na", na: "Sodium", m: "22.990", c: 1, r: 3, cat: "alkali" },
+            { n: 12, s: "Mg", na: "Magnesium", m: "24.305", c: 2, r: 3, cat: "alkaline" },
+            { n: 13, s: "Al", na: "Aluminium", m: "26.982", c: 13, r: 3, cat: "post" },
+            { n: 14, s: "Si", na: "Silicon", m: "28.085", c: 14, r: 3, cat: "metalloid" },
+            { n: 15, s: "P", na: "Phosphorus", m: "30.974", c: 15, r: 3, cat: "nonmetal" },
+            { n: 16, s: "S", na: "Sulfur", m: "32.06", c: 16, r: 3, cat: "nonmetal" },
+            { n: 17, s: "Cl", na: "Chlorine", m: "35.45", c: 17, r: 3, cat: "nonmetal" },
+            { n: 18, s: "Ar", na: "Argon", m: "39.948", c: 18, r: 3, cat: "noble" },
+            { n: 19, s: "K", na: "Potassium", m: "39.098", c: 1, r: 4, cat: "alkali" },
+            { n: 20, s: "Ca", na: "Calcium", m: "40.078", c: 2, r: 4, cat: "alkaline" },
+            { n: 21, s: "Sc", na: "Scandium", m: "44.956", c: 3, r: 4, cat: "transition" },
+            { n: 22, s: "Ti", na: "Titanium", m: "47.867", c: 4, r: 4, cat: "transition" },
+            { n: 23, s: "V", na: "Vanadium", m: "50.942", c: 5, r: 4, cat: "transition" },
+            { n: 24, s: "Cr", na: "Chromium", m: "51.996", c: 6, r: 4, cat: "transition" },
+            { n: 25, s: "Mn", na: "Manganese", m: "54.938", c: 7, r: 4, cat: "transition" },
+            { n: 26, s: "Fe", na: "Iron", m: "55.845", c: 8, r: 4, cat: "transition" },
+            { n: 27, s: "Co", na: "Cobalt", m: "58.933", c: 9, r: 4, cat: "transition" },
+            { n: 28, s: "Ni", na: "Nickel", m: "58.693", c: 10, r: 4, cat: "transition" },
+            { n: 29, s: "Cu", na: "Copper", m: "63.546", c: 11, r: 4, cat: "transition" },
+            { n: 30, s: "Zn", na: "Zinc", m: "65.38", c: 12, r: 4, cat: "transition" },
+            { n: 31, s: "Ga", na: "Gallium", m: "69.723", c: 13, r: 4, cat: "post" },
+            { n: 32, s: "Ge", na: "Germanium", m: "72.630", c: 14, r: 4, cat: "metalloid" },
+            { n: 33, s: "As", na: "Arsenic", m: "74.922", c: 15, r: 4, cat: "metalloid" },
+            { n: 34, s: "Se", na: "Selenium", m: "78.971", c: 16, r: 4, cat: "nonmetal" },
+            { n: 35, s: "Br", na: "Bromine", m: "79.904", c: 17, r: 4, cat: "nonmetal" },
+            { n: 36, s: "Kr", na: "Krypton", m: "83.798", c: 18, r: 4, cat: "noble" },
+            { n: 37, s: "Rb", na: "Rubidium", m: "85.468", c: 1, r: 5, cat: "alkali" },
+            { n: 38, s: "Sr", na: "Strontium", m: "87.62", c: 2, r: 5, cat: "alkaline" },
+            { n: 39, s: "Y", na: "Yttrium", m: "88.906", c: 3, r: 5, cat: "transition" },
+            { n: 40, s: "Zr", na: "Zirconium", m: "91.224", c: 4, r: 5, cat: "transition" },
+            { n: 41, s: "Nb", na: "Niobium", m: "92.906", c: 5, r: 5, cat: "transition" },
+            { n: 42, s: "Mo", na: "Molybdenum", m: "95.95", c: 6, r: 5, cat: "transition" },
+            { n: 43, s: "Tc", na: "Technetium", m: "(98)", c: 7, r: 5, cat: "transition" },
+            { n: 44, s: "Ru", na: "Ruthenium", m: "101.07", c: 8, r: 5, cat: "transition" },
+            { n: 45, s: "Rh", na: "Rhodium", m: "102.91", c: 9, r: 5, cat: "transition" },
+            { n: 46, s: "Pd", na: "Palladium", m: "106.42", c: 10, r: 5, cat: "transition" },
+            { n: 47, s: "Ag", na: "Silver", m: "107.87", c: 11, r: 5, cat: "transition" },
+            { n: 48, s: "Cd", na: "Cadmium", m: "112.41", c: 12, r: 5, cat: "transition" },
+            { n: 49, s: "In", na: "Indium", m: "114.82", c: 13, r: 5, cat: "post" },
+            { n: 50, s: "Sn", na: "Tin", m: "118.71", c: 14, r: 5, cat: "post" },
+            { n: 51, s: "Sb", na: "Antimony", m: "121.76", c: 15, r: 5, cat: "metalloid" },
+            { n: 52, s: "Te", na: "Tellurium", m: "127.60", c: 16, r: 5, cat: "metalloid" },
+            { n: 53, s: "I", na: "Iodine", m: "126.90", c: 17, r: 5, cat: "nonmetal" },
+            { n: 54, s: "Xe", na: "Xenon", m: "131.29", c: 18, r: 5, cat: "noble" },
+            { n: 55, s: "Cs", na: "Cesium", m: "132.91", c: 1, r: 6, cat: "alkali" },
+            { n: 56, s: "Ba", na: "Barium", m: "137.33", c: 2, r: 6, cat: "alkaline" },
+            { n: 57, s: "La", na: "Lanthanum", m: "138.91", c: 4, r: 9, cat: "lanthanide" },
+            { n: 58, s: "Ce", na: "Cerium", m: "140.12", c: 5, r: 9, cat: "lanthanide" },
+            { n: 59, s: "Pr", na: "Praseodymium", m: "140.91", c: 6, r: 9, cat: "lanthanide" },
+            { n: 60, s: "Nd", na: "Neodymium", m: "144.24", c: 7, r: 9, cat: "lanthanide" },
+            { n: 61, s: "Pm", na: "Promethium", m: "(145)", c: 8, r: 9, cat: "lanthanide" },
+            { n: 62, s: "Sm", na: "Samarium", m: "150.36", c: 9, r: 9, cat: "lanthanide" },
+            { n: 63, s: "Eu", na: "Europium", m: "151.96", c: 10, r: 9, cat: "lanthanide" },
+            { n: 64, s: "Gd", na: "Gadolinium", m: "157.25", c: 11, r: 9, cat: "lanthanide" },
+            { n: 65, s: "Tb", na: "Terbium", m: "158.93", c: 12, r: 9, cat: "lanthanide" },
+            { n: 66, s: "Dy", na: "Dysprosium", m: "162.50", c: 13, r: 9, cat: "lanthanide" },
+            { n: 67, s: "Ho", na: "Holmium", m: "164.93", c: 14, r: 9, cat: "lanthanide" },
+            { n: 68, s: "Er", na: "Erbium", m: "167.26", c: 15, r: 9, cat: "lanthanide" },
+            { n: 69, s: "Tm", na: "Thulium", m: "168.93", c: 16, r: 9, cat: "lanthanide" },
+            { n: 70, s: "Yb", na: "Ytterbium", m: "173.05", c: 17, r: 9, cat: "lanthanide" },
+            { n: 71, s: "Lu", na: "Lutetium", m: "174.97", c: 18, r: 9, cat: "lanthanide" },
+            { n: 72, s: "Hf", na: "Hafnium", m: "178.49", c: 4, r: 6, cat: "transition" },
+            { n: 73, s: "Ta", na: "Tantalum", m: "180.95", c: 5, r: 6, cat: "transition" },
+            { n: 74, s: "W", na: "Tungsten", m: "183.84", c: 6, r: 6, cat: "transition" },
+            { n: 75, s: "Re", na: "Rhenium", m: "186.21", c: 7, r: 6, cat: "transition" },
+            { n: 76, s: "Os", na: "Osmium", m: "190.23", c: 8, r: 6, cat: "transition" },
+            { n: 77, s: "Ir", na: "Iridium", m: "192.22", c: 9, r: 6, cat: "transition" },
+            { n: 78, s: "Pt", na: "Platinum", m: "195.08", c: 10, r: 6, cat: "transition" },
+            { n: 79, s: "Au", na: "Gold", m: "196.97", c: 11, r: 6, cat: "transition" },
+            { n: 80, s: "Hg", na: "Mercury", m: "200.59", c: 12, r: 6, cat: "transition" },
+            { n: 81, s: "Tl", na: "Thallium", m: "204.38", c: 13, r: 6, cat: "post" },
+            { n: 82, s: "Pb", na: "Lead", m: "207.2", c: 14, r: 6, cat: "post" },
+            { n: 83, s: "Bi", na: "Bismuth", m: "208.98", c: 15, r: 6, cat: "post" },
+            { n: 84, s: "Po", na: "Polonium", m: "(209)", c: 16, r: 6, cat: "metalloid" },
+            { n: 85, s: "At", na: "Astatine", m: "(210)", c: 17, r: 6, cat: "metalloid" },
+            { n: 86, s: "Rn", na: "Radon", m: "(222)", c: 18, r: 6, cat: "noble" },
+            { n: 87, s: "Fr", na: "Francium", m: "(223)", c: 1, r: 7, cat: "alkali" },
+            { n: 88, s: "Ra", na: "Radium", m: "(226)", c: 2, r: 7, cat: "alkaline" },
+            { n: 89, s: "Ac", na: "Actinium", m: "(227)", c: 3, r: 7, cat: "actinide" },
+            { n: 90, s: "Th", na: "Thorium", m: "232.04", c: 4, r: 7, cat: "actinide" },
+            { n: 91, s: "Pa", na: "Protactinium", m: "231.04", c: 5, r: 7, cat: "actinide" },
+            { n: 92, s: "U", na: "Uranium", m: "238.03", c: 6, r: 7, cat: "actinide" },
+            { n: 93, s: "Np", na: "Neptunium", m: "(237)", c: 7, r: 7, cat: "actinide" },
+            { n: 94, s: "Pu", na: "Plutonium", m: "(244)", c: 8, r: 7, cat: "actinide" },
+            { n: 95, s: "Am", na: "Americium", m: "(243)", c: 9, r: 7, cat: "actinide" },
+            { n: 96, s: "Cm", na: "Curium", m: "(247)", c: 10, r: 7, cat: "actinide" },
+            { n: 97, s: "Bk", na: "Berkelium", m: "(247)", c: 11, r: 7, cat: "actinide" },
+            { n: 98, s: "Cf", na: "Californium", m: "(251)", c: 12, r: 7, cat: "actinide" },
+            { n: 99, s: "Es", na: "Einsteinium", m: "(252)", c: 13, r: 7, cat: "actinide" },
+            { n: 100, s: "Fm", na: "Fermium", m: "(257)", c: 14, r: 7, cat: "actinide" },
+            { n: 101, s: "Md", na: "Mendelevium", m: "(258)", c: 15, r: 7, cat: "actinide" },
+            { n: 102, s: "No", na: "Nobelium", m: "(259)", c: 16, r: 7, cat: "actinide" },
+            { n: 103, s: "Lr", na: "Lawrencium", m: "(262)", c: 17, r: 7, cat: "actinide" },
+            { n: 104, s: "Rf", na: "Rutherfordium", m: "(267)", c: 4, r: 7, cat: "transition" },
+            { n: 105, s: "Db", na: "Dubnium", m: "(268)", c: 5, r: 7, cat: "transition" },
+            { n: 106, s: "Sg", na: "Seaborgium", m: "(269)", c: 6, r: 7, cat: "transition" },
+            { n: 107, s: "Bh", na: "Bohrium", m: "(270)", c: 7, r: 7, cat: "transition" },
+            { n: 108, s: "Hs", na: "Hassium", m: "(269)", c: 8, r: 7, cat: "transition" },
+            { n: 109, s: "Mt", na: "Meitnerium", m: "(278)", c: 9, r: 7, cat: "unknown" },
+            { n: 110, s: "Ds", na: "Darmstadtium", m: "(281)", c: 10, r: 7, cat: "unknown" },
+            { n: 111, s: "Rg", na: "Roentgenium", m: "(282)", c: 11, r: 7, cat: "unknown" },
+            { n: 112, s: "Cn", na: "Copernicium", m: "(285)", c: 12, r: 7, cat: "transition" },
+            { n: 113, s: "Nh", na: "Nihonium", m: "(286)", c: 13, r: 7, cat: "unknown" },
+            { n: 114, s: "Fl", na: "Flerovium", m: "(289)", c: 14, r: 7, cat: "post" },
+            { n: 115, s: "Mc", na: "Moscovium", m: "(290)", c: 15, r: 7, cat: "unknown" },
+            { n: 116, s: "Lv", na: "Livermorium", m: "(293)", c: 16, r: 7, cat: "unknown" },
+            { n: 117, s: "Ts", na: "Tennessine", m: "(294)", c: 17, r: 7, cat: "unknown" },
+            { n: 118, s: "Og", na: "Oganesson", m: "(294)", c: 18, r: 7, cat: "unknown" }
+        ];
+
+        // --- Low-Latency 30-Element Reactivity Series DataSet Array ---
+        const reactivitySeriesMatrix = [
+            { name: "Cesium", symbol: "Cs", cond: "Reacts explosively with cold water & raw acids", lvl: "extreme" },
+            { name: "Francium", symbol: "Fr", cond: "Highly unstable / High velocity fragmentation", lvl: "extreme" },
+            { name: "Rubidium", symbol: "Rb", cond: "Spontaneous violent atmospheric ignition", lvl: "extreme" },
+            { name: "Potassium", symbol: "K", cond: "Reacts violently with cold water, burns with lilac flame", lvl: "high" },
+            { name: "Sodium", symbol: "Na", cond: "Vigorous reaction with cold water, melts into a ball", lvl: "high" },
+            { name: "Lithium", symbol: "Li", cond: "Reacts steadily with water, floats without melting", lvl: "high" },
+            { name: "Barium", symbol: "Ba", cond: "Reacts rapidly with water and rapidly with acids", lvl: "high" },
+            { name: "Radium", symbol: "Ra", cond: "Reacts vigorously with water, highly radioactive", lvl: "high" },
+            { name: "Strontium", symbol: "Sr", cond: "Reacts vigorously with water, quick oxidation", lvl: "high" },
+            { name: "Calcium", symbol: "Ca", cond: "Reacts moderately with cold water, forms cloudy solution", lvl: "high" },
+            { name: "Magnesium", symbol: "Mg", cond: "Very slow with cold water; reacts vigorously with steam", lvl: "medium" },
+            { name: "Aluminum", symbol: "Al", cond: "Protected by oxide layer; reacts with steam & hot acids", lvl: "medium" },
+            { name: "Titanium", symbol: "Ti", cond: "Highly corrosion resistant; reacts with concentrated hot acids", lvl: "medium" },
+            { name: "Manganese", symbol: "Mn", cond: "Reacts slowly with cold water; readily displaces hydrogen from acids", lvl: "medium" },
+            { name: "Zinc", symbol: "Zn", cond: "Reacts when heated with steam; dissolves readily in acids", lvl: "medium" },
+            { name: "Chromium", symbol: "Cr", cond: "Passivates in air; slow reaction with hot dilute acids", lvl: "medium" },
+            { name: "Iron", symbol: "Fe", cond: "Reacts slowly with steam; displaces hydrogen from dilute acids", lvl: "medium" },
+            { name: "Cadmium", symbol: "Cd", cond: "Slow reaction with hot dilute acids; forms poisonous compounds", lvl: "medium" },
+            { name: "Cobalt", symbol: "Co", cond: "Very slow reaction with dilute acids unless heated", lvl: "medium" },
+            { name: "Nickel", symbol: "Ni", cond: "Slightly reactive with dilute acids; stable in atmospheric air", lvl: "medium" },
+            { name: "Tin", symbol: "Sn", cond: "Reacts slowly with hot acids; does not displace hydrogen easily", lvl: "medium" },
+            { name: "Lead", symbol: "Pb", cond: "Reacts slowly with hot concentrated acids; forms protective crust", lvl: "medium" },
+            { name: "Hydrogen", symbol: "H", cond: "Standard reference baseline baseline marker node", lvl: "reference" },
+            { name: "Antimony", symbol: "Sb", cond: "Does not react with dilute acids; reacts with oxidizing acids", lvl: "low" },
+            { name: "Bismuth", symbol: "Bi", cond: "Stable in water & cold dilute acids; oxidizes at high temps", lvl: "low" },
+            { name: "Copper", symbol: "Cu", cond: "No reaction with steam or dilute acids; reacts with hot HNO₃", lvl: "low" },
+            { name: "Mercury", symbol: "Hg", cond: "Liquid metal; turns into oxide at high temps, dissolves in HNO₃", lvl: "low" },
+            { name: "Silver", symbol: "Ag", cond: "Highly unreactive; requires hot concentrated oxidizing acids", lvl: "low" },
+            { name: "Gold", symbol: "Au", cond: "Completely unreactive; dissolves only in Aqua Regia matrix", lvl: "low" },
+            { name: "Platinum", symbol: "Pt", cond: "Noble catalyst; ultimate stability against thermal & acid attacks", lvl: "low" }
+        ];
+
+        function renderPeriodicTable() {
+            const grid = $('ptGrid'); if (!grid || grid.children.length > 0) return;
+            for (let r = 1; r <= 10; r++) {
+                for (let c = 1; c <= 18; c++) {
+                    const el = ptData.find(e => {
+                        if (e.n >= 57 && e.n <= 71) return r === 9 && c === (e.n - 57 + 4);
+                        if (e.n >= 89 && e.n <= 103) return r === 10 && c === (e.n - 89 + 4);
+                        return e.r === r && e.c === c;
+                    });
+                    if (el) {
+                        grid.innerHTML += `
+                            <div class="pt-el cat-${el.cat}" style="grid-column:${c}; grid-row:${r};" onclick="inspectElement(${el.n})">
+                                <span class="num">${el.n}</span>
+                                <span class="sym">${el.s}</span>
+                            </div>`;
+                    }
+                }
+            }
+        }
+
+        function inspectElement(n) {
+            const el = ptData.find(e => e.n === n);
+            if (el) {
+                $('inspectName').innerText = el.na + ` (${el.s})`;
+                $('inspectMass').innerText = el.m;
+                $('inspectNum').innerText = el.n;
+                $('elementInspector').style.display = "block";
+            }
+        }
+
+        function renderFullReactivitySeries() {
+            const container = $('reactivityContainer'); if (!container) return;
+            container.innerHTML = '';
+            reactivitySeriesMatrix.forEach(item => {
+                let backgroundStyle = 'background: var(--surface-1);';
+                let badgeColor = 'color: var(--text-muted);';
+
+                if (item.lvl === 'extreme') { backgroundStyle = 'background: rgba(239, 68, 68, 0.25); border-left: 4px solid #ef4444;'; badgeColor = 'color: #f87171; font-weight: 800;'; }
+                else if (item.lvl === 'high') { backgroundStyle = 'background: rgba(239, 68, 68, 0.1); border-left: 4px solid #f97316;'; badgeColor = 'color: #fb923c; font-weight: 700;'; }
+                else if (item.lvl === 'medium') { backgroundStyle = 'background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3b82f6;'; badgeColor = 'color: #60a5fa; font-weight: 600;'; }
+                else if (item.lvl === 'reference') { backgroundStyle = 'background: rgba(255, 255, 255, 0.08); border: 1px dashed var(--border-color); font-style: italic;'; badgeColor = 'color: #ffffff; font-weight: 700;'; }
+                else if (item.lvl === 'low') { backgroundStyle = 'background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981;'; badgeColor = 'color: #34d399; font-weight: 700;'; }
+
+                container.innerHTML += `
+                    <div class="reac-row" style="${backgroundStyle}">
+                        <div style="display: flex; flex-direction: column; gap: 2px; max-width: 70%;">
+                            <span style="${badgeColor}">${item.name} (${item.symbol})</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted); line-height: 1.3;">${item.cond}</span>
+                        </div>
+                        <span style="font-size: 0.65rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); text-align: right;">${item.lvl}</span>
+                    </div>`;
+            });
+        }
+
+        function switchLabSubTab(tabId, btn) {
+            document.querySelectorAll('.lab-sub-section').forEach(s => s.style.display = 'none');
+            $('labTabsContainer').querySelectorAll('.btn').forEach(b => { b.className = 'btn btn-ghost'; });
+            btn.className = 'btn btn-primary'; $('lab-' + tabId).style.display = 'block';
+        }
+
+        // --- Core Web API Systems ---
+        async function queryGemini(promptText) {
+            if (!geminiApiKey) throw new Error("Missing Gemini Key in settings configuration.");
+            const payload = { contents: [{ parts: [{ text: promptText }] }] };
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error("API Connection error.");
+            const data = await res.json(); return data.candidates[0].content.parts[0].text;
+        }
+
+        async function predictReaction() {
+            const input = $('chemReactants').value.trim(); if (!input) return;
+            const resDiv = $('reactResult'); resDiv.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Processing formula...';
+            try {
+                const aiResponse = await queryGemini(`Predict products: ${input}. Balances equations cleanly. Return ONLY plain text formula string.`);
+                resDiv.innerText = aiResponse;
+            } catch (e) { resDiv.innerText = "Error: " + e.message; }
+        }
+
+        // --- Localized Calculations Engines ---
+        function calcGasLaw() {
+            const P = parseFloat($('gasP').value), V = parseFloat($('gasV').value), n = parseFloat($('gasN').value), T = parseFloat($('gasT').value), R = 0.0821;
+            let m = 0; if (isNaN(P)) m++; if (isNaN(V)) m++; if (isNaN(n)) m++; if (isNaN(T)) m++;
+            if (m !== 1) { $('gasRes').innerText = "Omit exactly 1 blank variable."; return; }
+            if (isNaN(P)) $('gasRes').innerText = `P = ${((n * R * T) / V).toFixed(4)} atm`;
+            if (isNaN(V)) $('gasRes').innerText = `V = ${((n * R * T) / P).toFixed(4)} L`;
+            if (isNaN(n)) $('gasRes').innerText = `n = ${((P * V) / (R * T)).toFixed(4)} mol`;
+            if (isNaN(T)) $('gasRes').innerText = `T = ${((P * V) / (n * R)).toFixed(4)} K`;
+        }
+
+        function calcPh() {
+            const pH = parseFloat($('phVal').value);
+            if (isNaN(pH) || pH < 0 || pH > 14) { $('phMetricsResult').innerText = "Provide accurate 0-14 parameters."; return; }
+            $('phMetricsResult').innerHTML = `pOH: ${(14 - pH).toFixed(2)}<br>[H+] Conc: ${Math.pow(10, -pH).toExponential(2)} M<br>Nature: ${pH < 7 ? 'Acidic' : pH === 7 ? 'Neutral' : 'Basic'}`;
+        }
+
+        // --- Knowledge Base Sourcing Protocols ---
+        function setSearchMode(mode, btn) {
+            currentSearchMode = mode;
+            $('kbTabsContainer').querySelectorAll('.btn').forEach(b => b.className = 'btn btn-ghost');
+            btn.className = 'btn btn-primary';
+            $('webSearchFilters').style.display = (mode === 'web') ? 'flex' : 'none';
+
+            if ($('wikiSearch').value.trim()) {
+                searchKnowledgeBase();
+            }
+        }
+
+        function toggleWebSearchType(type) {
+            webSearchFormat = type;
+            if ($('wikiSearch').value.trim() && currentSearchMode === 'web') {
+                searchKnowledgeBase();
+            }
+        }
+
+        async function searchKnowledgeBase() {
+            const query = $('wikiSearch').value.trim(); if (!query) return;
+            const results = $('wikiResults');
+            results.innerHTML = '<div style="text-align:center;padding:20px;"><i class="ph ph-spinner-gap ph-spin"></i> Initializing network handshake...</div>';
+
+            if (currentSearchMode === 'wikipedia') {
+                try {
+                    const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=4&srsearch=${encodeURIComponent(query)}`);
+                    const data = await res.json(); results.innerHTML = '';
+                    data.query.search.forEach(item => {
+                        results.innerHTML += `
+                            <div class="glass-panel" onclick="window.open('https://en.wikipedia.org/?curid=${item.pageid}', '_blank')">
+                                <h4 style="margin:0 0 4px 0; color:var(--primary); font-size:0.95rem;">${item.title}</h4>
+                                <div style="font-size:0.8rem; opacity:0.8; line-height:1.4;">${item.snippet}...</div>
+                            </div>`;
+                    });
+                } catch (e) { results.innerHTML = '<div style="color:#ef4444; font-size:0.85rem;">Wikipedia gateway fault.</div>'; }
+            } else if (currentSearchMode === 'academic') {
+                try {
+                    const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=4`);
+                    const data = await res.json(); results.innerHTML = '';
+                    if (!data.docs || data.docs.length === 0) { results.innerHTML = '<div style="text-align:center;font-size:0.85rem;">No records located.</div>'; return; }
+                    data.docs.forEach(item => {
+                        results.innerHTML += `
+                            <div class="glass-panel" onclick="window.open('https://openlibrary.org${item.key || ''}', '_blank')">
+                                <h4 style="margin:0 0 4px 0; color:var(--primary); font-size:0.95rem;">${item.title}</h4>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">Author: ${item.author_name ? item.author_name[0] : 'Unspecified Author'}</div>
+                            </div>`;
+                    });
+                } catch (e) { results.innerHTML = '<div style="color:#ef4444; font-size:0.85rem;">Academic registry protocol fault.</div>'; }
+            } else {
+                if (!googleApiKey || !googleCx) {
+                    results.innerHTML = `
+                        <div class="glass-panel" style="text-align:center;">
+                            <p style="font-size:0.85rem;margin-bottom:12px;">Web parameters require an active Engine ID & Key inside parameters layout.</p>
+                            <button class="btn btn-primary" onclick="window.open('https://google.com/search?q=' + encodeURIComponent(query),'_blank')">Launch Native Browser Search</button>
+                        </div>`;
+                    return;
+                }
+                try {
+                    let searchUrl = `https://customsearch.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${googleCx}&q=${encodeURIComponent(query)}`;
+                    if (webSearchFormat === 'image') searchUrl += `&searchType=image`;
+
+                    const res = await fetch(searchUrl);
+                    const data = await res.json(); results.innerHTML = '';
+                    if (!data.items || data.items.length === 0) { results.innerHTML = '<div style="text-align:center;font-size:0.85rem;">No media or documents verified.</div>'; return; }
+
+                    if (webSearchFormat === 'image') {
+                        let gridHtml = '<div class="img-search-grid">';
+                        data.items.forEach(item => {
+                            gridHtml += `
+                                <div class="img-search-card" onclick="window.open('${item.image?.contextLink || item.link}', '_blank')">
+                                    <img src="${item.link}" alt="Result">
+                                    <span>${item.title}</span>
+                                </div>`;
+                        });
+                        gridHtml += '</div>';
+                        results.innerHTML = gridHtml;
+                    } else {
+                        data.items.forEach(item => {
+                            results.innerHTML += `
+                                <div class="glass-panel" onclick="window.open('${item.link}', '_blank')">
+                                    <h4 style="margin:0 0 4px 0; color:var(--primary); font-size:0.9rem;">${item.title}</h4>
+                                    <div style="font-size:0.75rem; opacity:0.8;">${item.snippet}</div>
+                                </div>`;
+                        });
+                    }
+                } catch (e) { results.innerHTML = '<div style="color:#ef4444; font-size:0.85rem;">Web deployment cluster fault.</div>'; }
+            }
+        }
+
+        // --- Layout Customizer UI Rules ---
+        function setAppTheme(theme) {
+            const root = document.documentElement; document.body.className = '';
+            if (theme === 'light') {
+                root.style.setProperty('--bg-dark', '#f4f4f5'); root.style.setProperty('--text-main', '#09090b'); root.style.setProperty('--glass-rgb', '0, 0, 0');
+            } else if (theme === 'midnight') {
+                root.style.setProperty('--bg-dark', '#020617'); root.style.setProperty('--text-main', '#f8fafc'); root.style.setProperty('--glass-rgb', '255, 255, 255');
+            } else if (theme === 'water') {
+                root.style.setProperty('--bg-dark', '#001220'); root.style.setProperty('--text-main', '#ffffff'); root.style.setProperty('--glass-rgb', '255, 255, 255'); document.body.classList.add('theme-water');
+            } else {
+                root.style.setProperty('--bg-dark', '#09090b'); root.style.setProperty('--text-main', '#ffffff'); root.style.setProperty('--glass-rgb', '255, 255, 255');
+            }
+            updateCanvasToolStyles();
+        }
+        function updateFont(font) { document.documentElement.style.setProperty('--font-sans', font); }
+        function toggleAnim(c) { c ? document.body.classList.add('reduce-motion') : document.body.classList.remove('reduce-motion'); }
+        function toggleSimpleBg(c) { c ? document.body.classList.add('simple-bg') : document.body.classList.remove('simple-bg'); toggleParticles(!c); }
+        function toggleLargeFont(c) { c ? document.body.classList.add('font-large') : document.body.classList.remove('font-large'); }
+        function toggleCompact(c) { c ? document.body.classList.add('compact-mode') : document.body.classList.remove('compact-mode'); }
+
+        // --- To-Do Task Subsystem ---
+        function renderTasks() {
+            const container = $('taskListContainer'); container.innerHTML = '';
+            if (tasks.length === 0) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.8rem;padding:8px;">Workspace Matrix clear.</div>'; return; }
+            tasks.forEach(t => {
+                container.innerHTML += `
+                    <div class="task-card ${t.status === 'done' ? 'done' : ''}">
+                        <div style="display:flex; align-items:center; gap:10px; max-width:85%;">
+                            <input type="checkbox" class="task-checkbox" ${t.status === 'done' ? 'checked' : ''} onchange="toggleTaskStatus(${t.id}, this.checked)">
+                            <span style="font-size:0.85rem;">${t.text}</span>
+                        </div>
+                        <i class="ph ph-trash" style="color:#ef4444;" onclick="deleteTask(${t.id})"></i>
+                    </div>`;
+            });
+        }
+        function addTask() {
+            const val = prompt("Enter operation metric parameters:");
+            if (val && val.trim()) { tasks.push({ id: Date.now(), text: val.trim(), status: 'todo' }); localStorage.setItem('m_oasis_tasks', JSON.stringify(tasks)); renderTasks(); }
+        }
+        function toggleTaskStatus(id, isChecked) {
+            const t = tasks.find(x => x.id === id); if (t) { t.status = isChecked ? 'done' : 'todo'; localStorage.setItem('m_oasis_tasks', JSON.stringify(tasks)); renderTasks(); }
+        }
+        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); localStorage.setItem('m_oasis_tasks', JSON.stringify(tasks)); renderTasks(); }
+
+        // --- Floating Animation System Nodes ---
+        let particlesEnabled = true, particlesArray = [], particleFrameId;
+        function initParticles() {
+            const canvas = $('particlesCanvas'); canvas.width = window.innerWidth; canvas.height = window.innerHeight; particlesArray = [];
+            for (let i = 0; i < 15; i++) { particlesArray.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 2 + 1, dx: Math.random() - 0.5, dy: Math.random() - 0.5 }); }
+        }
+        function handleParticles() {
+            if (!particlesEnabled) return;
+            const pCanvas = $('particlesCanvas'); const pCtx = pCanvas.getContext('2d');
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height); pCtx.fillStyle = 'rgba(255,255,255,0.15)';
+            particlesArray.forEach(p => {
+                p.x += p.dx; p.y += p.dy; if (p.x < 0 || p.x > pCanvas.width) p.dx = -p.dx; if (p.y < 0 || p.y > pCanvas.height) p.dy = -p.dy;
+                pCtx.beginPath(); pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2); pCtx.fill();
+            });
+            particleFrameId = requestAnimationFrame(handleParticles);
+        }
+        function toggleParticles(c) { particlesEnabled = c; if (c) { initParticles(); handleParticles(); } }
+
+        window.onload = () => {
+            renderTasks(); initParticles(); handleParticles();
+            window.addEventListener('resize', resizeWbCanvas);
+        };
+    </script>
+</body>
+
+</html>
