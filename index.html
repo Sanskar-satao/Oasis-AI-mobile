@@ -3,1665 +3,778 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Oasis AI - Premium Mobile Platform</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
-        rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Oasis AI - The Ultimate Student Hub</title>
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
     <style>
+        /* Modern Apple-Inspired Design System */
         :root {
-            --bg-dark: #060608;
-            --text-main: #f4f4f7;
-            --text-muted: #7e7e86;
-            --glass-surface: rgba(255, 255, 255, 0.03);
-            --glass-blur: 24px;
-            --border-color: rgba(255, 255, 255, 0.06);
-            --surface-1: rgba(255, 255, 255, 0.02);
-            --surface-2: rgba(255, 255, 255, 0.04);
-            --surface-3: rgba(255, 255, 255, 0.08);
-            --input-bg: rgba(0, 0, 0, 0.4);
-            --primary: #6366f1;
-            --primary-rgb: 99, 102, 241;
-            --secondary: #14b8a6;
-            --radius-xl: 28px;
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --font-sans: 'Plus Jakarta Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --spring-curve: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-
-            /* Atomic Categories Vivid Palette */
-            --cat-alkali: #ef4444;
-            --cat-alkaline: #f97316;
-            --cat-transition: #3b82f6;
-            --cat-lanthanide: #ec4899;
-            --cat-actinide: #a855f7;
-            --cat-post: #6366f1;
-            --cat-metalloid: #10b981;
-            --cat-nonmetal: #06b6d4;
-            --cat-noble: #8b5cf6;
-            --cat-unknown: #4b5563;
+            --bg-color: #fbfbfd;
+            --bg-secondary: #ffffff;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent-blue: #0071e3;
+            --accent-hover: #0077ed;
+            --global-nav-bg: rgba(0, 0, 0, 0.85);
+            /* Liquid Glass Variables */
+            --glass-bg-light: rgba(251, 251, 253, 0.75);
+            --glass-bg-dark: rgba(29, 29, 31, 0.75);
+            --border: rgba(0, 0, 0, 0.08);
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
         * {
             box-sizing: border-box;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-stack);
+        }
+
+        html {
+            /* Enables smooth scrolling for the anchor links */
+            scroll-behavior: smooth;
+            /* Prevents the sticky navs from covering content when scrolling to an ID */
+            scroll-padding-top: 130px;
         }
 
         body {
-            font-family: var(--font-sans);
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(circle at 0% 0%, rgba(var(--primary-rgb), 0.12), transparent 45%),
-                radial-gradient(circle at 100% 100%, rgba(20, 184, 166, 0.08), transparent 45%);
+            background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        #particlesCanvas {
+        /* --- Liquid Glass Utilities --- */
+        .liquid-glass-light {
+            background-color: var(--glass-bg-light);
+            backdrop-filter: saturate(180%) blur(24px);
+            -webkit-backdrop-filter: saturate(180%) blur(24px);
+        }
+
+        .liquid-glass-dark {
+            background-color: var(--glass-bg-dark);
+            backdrop-filter: saturate(180%) blur(24px);
+            -webkit-backdrop-filter: saturate(180%) blur(24px);
+            color: #f5f5f7;
+        }
+
+        /* --- Global Navigation (Dark) --- */
+        .global-nav {
             position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Dynamic Island Floating Header Matrix */
-        .dynamic-island-header {
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(var(--bg-dark), 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 100;
-        }
-
-        .app-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 14px 16px 120px 16px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .section {
-            display: none;
-            animation: fluidSpring 0.55s var(--spring-curve) forwards;
-            will-change: transform, opacity;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fluidSpring {
-            0% {
-                opacity: 0;
-                transform: translateY(24px) scale(0.96);
-                filter: blur(6px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-                filter: blur(0);
-            }
-        }
-
-        /* Bento Grid Box Shells Layout */
-        .bento-card {
-            background: var(--glass-surface);
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 18px;
-            margin-bottom: 14px;
-            transition: transform 0.3s var(--spring-curve), border-color 0.2s ease;
-        }
-
-        .bento-card:active {
-            transform: scale(0.985);
-            border-color: rgba(var(--primary-rgb), 0.3);
-        }
-
-        .input-box {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px 16px;
-            border-radius: var(--radius-md);
-            color: var(--text-main);
-            font-family: var(--font-sans);
-            font-size: 0.95rem;
+            top: 0;
             width: 100%;
-            transition: all 0.25s var(--ease-out-expo);
-        }
-
-        .input-box:focus {
-            border-color: var(--primary);
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.15);
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            border: none;
-            font-family: var(--font-sans);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
+            height: 44px;
+            z-index: 9999;
+            display: flex;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.25s var(--ease-out-expo);
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.3);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.95);
-            filter: brightness(0.9);
-        }
-
-        .btn-ghost {
-            background: var(--surface-2);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-ghost:active {
-            background: var(--surface-3);
-        }
-
-        .sub-tabs {
+        .global-nav-list {
             display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .sub-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .sub-tabs .btn {
-            flex-shrink: 0;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            border-radius: 20px;
-        }
-
-        .sub-tabs .btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Floating Island Bottom Matrix Nav */
-        .floating-nav-island {
-            position: fixed;
-            bottom: 24px;
-            left: 16px;
-            right: 16px;
-            height: 72px;
-            background: rgba(10, 10, 12, 0.65);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-xl);
-            display: flex;
-            justify-content: space-around;
             align-items: center;
-            padding: 0 10px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 20px;
+            list-style: none;
         }
 
-        .nav-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-muted);
-            font-size: 0.65rem;
-            font-weight: 600;
-            gap: 5px;
-            width: 20%;
+        .global-nav-list a {
+            color: #f5f5f7;
             text-decoration: none;
-            transition: color 0.2s ease, transform 0.2s ease;
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            letter-spacing: -0.01em;
         }
 
-        .nav-tab i {
-            font-size: 1.5rem;
-            transition: transform 0.3s var(--spring-curve);
-        }
-
-        .nav-tab.active {
-            color: var(--primary);
-        }
-
-        .nav-tab.active i {
-            transform: translateY(-4px) scale(1.1);
-            color: var(--primary);
-        }
-
-        /* Structural Logic System Classes */
-        .task-row {
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            padding: 14px;
-            border-radius: var(--radius-md);
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s var(--ease-out-expo);
-        }
-
-        .task-row.done {
-            opacity: 0.45;
-        }
-
-        .task-row.done span {
-            text-decoration: line-through;
-        }
-
-        #wbCanvas {
-            background: #09090b;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            touch-action: none;
-            width: 100%;
-            height: 42vh;
-        }
-
-        /* Periodic Grid Array Layouts */
-        .pt-scroll-container {
-            overflow-x: auto;
-            padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .pt-grid {
-            display: grid;
-            grid-template-columns: repeat(18, 54px);
-            grid-template-rows: repeat(10, 54px);
-            gap: 5px;
-            width: max-content;
-        }
-
-        .pt-el {
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.7rem;
-            position: relative;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .pt-el:active {
-            transform: scale(1.2);
-            z-index: 10;
-        }
-
-        .pt-el .sym {
-            font-weight: 800;
-            font-size: 1rem;
-        }
-
-        .pt-el .num {
-            position: absolute;
-            top: 3px;
-            left: 4px;
-            font-size: 0.55rem;
-            opacity: 0.6;
-        }
-
-        /* Categorized element background bindings */
-        .pt-el.alkali {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: var(--cat-alkali);
-            color: #fecaca;
-        }
-
-        .pt-el.alkaline {
-            background: rgba(249, 115, 22, 0.15);
-            border-color: var(--cat-alkaline);
-            color: #ffedd5;
-        }
-
-        .pt-el.transition {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: var(--cat-transition);
-            color: #dbeafe;
-        }
-
-        .pt-el.lanthanide {
-            background: rgba(236, 72, 153, 0.15);
-            border-color: var(--cat-lanthanide);
-            color: #fce7f3;
-        }
-
-        .pt-el.actinide {
-            background: rgba(168, 85, 247, 0.15);
-            border-color: var(--cat-actinide);
-            color: #f3e8ff;
-        }
-
-        .pt-el.post {
-            background: rgba(99, 102, 241, 0.15);
-            border-color: var(--cat-post);
-            color: #e0e7ff;
-        }
-
-        .pt-el.metalloid {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: var(--cat-metalloid);
-            color: #d1fae5;
-        }
-
-        .pt-el.nonmetal {
-            background: rgba(6, 182, 212, 0.15);
-            border-color: var(--cat-nonmetal);
-            color: #ecfeff;
-        }
-
-        .pt-el.noble {
-            background: rgba(139, 92, 246, 0.15);
-            border-color: var(--cat-noble);
-            color: #ede9fe;
-        }
-
-        .pt-el.unknown {
-            background: rgba(75, 85, 99, 0.15);
-            border-color: var(--cat-unknown);
-            color: #f3f4f6;
-        }
-
-        /* Reactivity High-Density List Rules */
-        .reac-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 14px;
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            border-left: 4px solid var(--text-muted);
-        }
-
-        .reac-row.extreme {
-            border-left-color: #ef4444;
-            background: rgba(239, 68, 68, 0.04);
-        }
-
-        .reac-row.high {
-            border-left-color: #f97316;
-            background: rgba(249, 115, 22, 0.04);
-        }
-
-        .reac-row.medium {
-            border-left-color: #3b82f6;
-            background: rgba(59, 130, 246, 0.04);
-        }
-
-        .reac-row.reference {
-            border-left-color: #ffffff;
-            border-left-style: dashed;
-        }
-
-        .reac-row.low {
-            border-left-color: #10b981;
-            background: rgba(16, 185, 129, 0.04);
-        }
-
-        /* Image Sourcing Engine Elements */
-        .img-search-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .img-search-card {
-            background: var(--surface-1);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .img-search-card img {
-            width: 100%;
-            height: 115px;
-            object-fit: cover;
-            background: #000;
-            transition: transform 0.3s var(--ease-out-expo);
-        }
-
-        .img-search-card:active img {
-            transform: scale(1.04);
-        }
-
-        .img-search-card span {
-            font-size: 0.75rem;
-            padding: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--text-main);
-        }
-
-        /* Unified Flashcards Engine Layout */
-        .flashcard-shell {
-            perspective: 1000px;
-            height: 180px;
-            width: 100%;
-            margin: 12px 0;
-            cursor: pointer;
-        }
-
-        .flashcard-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.55s var(--spring-curve);
-            transform-style: preserve-3d;
-        }
-
-        .flashcard-shell.flipped .flashcard-inner {
-            transform: rotateY(180deg);
-        }
-
-        .flashcard-side {
-            position: absolute;
-            inset: 0;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        }
-
-        .flashcard-front {
-            background: var(--surface-2);
-            color: var(--text-main);
-        }
-
-        .flashcard-back {
-            background: rgba(99, 102, 241, 0.08);
-            border-color: var(--primary);
-            transform: rotateY(180deg);
-            color: var(--text-main);
-        }
-
-        /* High-Definition Overlay Frameworks */
-        .settings-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-dark);
-            z-index: 2000;
-            transform: translateY(100%);
-            transition: transform 0.45s var(--spring-curve);
-            overflow-y: auto;
-            padding: 24px 20px 120px 20px;
-        }
-
-        .settings-overlay.active {
-            transform: translateY(0);
-        }
-
-        .preview-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(4, 4, 6, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 3000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .preview-modal.active {
-            display: flex;
+        .global-nav-list a:hover {
             opacity: 1;
         }
 
-        .preview-content {
-            background: #0c0c0e;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 18px;
-            max-width: 92vw;
+        /* --- Local Navigation (Sticky Liquid Glass) --- */
+        .local-nav {
+            position: sticky;
+            top: 44px;
+            /* Sits below global nav */
             width: 100%;
-            text-align: center;
-            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
-            animation: modalZoom 0.3s var(--spring-curve);
+            height: 52px;
+            border-bottom: 1px solid var(--border);
+            z-index: 9998;
+            display: flex;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
 
-        @keyframes modalZoom {
-            from {
-                transform: scale(0.9);
-            }
-
-            to {
-                transform: scale(1);
-            }
+        .local-nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            padding: 0 20px;
         }
 
-        .quiz-option {
-            padding: 14px;
-            background: var(--surface-2);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            margin-bottom: 8px;
+        .local-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-download {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
             font-weight: 500;
-            font-size: 0.9rem;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .quiz-option.correct {
-            background: rgba(20, 184, 166, 0.15);
-            border-color: var(--secondary);
-            color: var(--secondary);
+        .btn-download:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
         }
 
-        .quiz-option.wrong {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: #ef4444;
-            color: #ef4444;
+        /* --- Hero Section & Scroll Animation --- */
+        .hero {
+            padding-top: 160px;
+            text-align: center;
+            height: 140vh;
+            /* Extra height to allow scrolling effect */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
-        body.theme-water {
-            background-image: linear-gradient(135deg, #01111f, #03324c, #01011a);
+        .hero h1 {
+            font-size: clamp(48px, 8vw, 100px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            z-index: 2;
+            background: linear-gradient(135deg, #1d1d1f 0%, #434345 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        body.reduce-motion * {
-            animation: none !important;
-            transition: none !important;
+        .hero h2 {
+            font-size: clamp(22px, 4vw, 36px);
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.004em;
+            margin-bottom: 60px;
+            z-index: 2;
+            max-width: 750px;
+            padding: 0 20px;
         }
 
-        body.font-large {
+        /* Wrapper for the ambient glow */
+        .hero-device-wrapper {
+            position: sticky;
+            top: 120px;
+            width: 90%;
+            max-width: 1050px;
+            height: 70vh;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated Ambient Glow Behind Device */
+        .hero-device-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.35), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(20, 184, 166, 0.25), transparent 60%);
+            filter: blur(60px);
+            z-index: -1;
+            border-radius: 40px;
+            animation: pulseGlow 6s alternate infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* The scaling Hero Image/Device */
+        .hero-device-container {
+            width: 100%;
+            max-width: 360px;
+            /* Mobile width */
+            aspect-ratio: 9 / 19.5;
+            /* Mobile aspect ratio */
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+            /* Apple signature scroll scale effect setup */
+            transform: scale(0.85) translateY(50px);
+            opacity: 0;
+            transition: opacity 1s ease-out;
+            border: 12px solid #111;
+            /* Simulates a mobile device bezel */
+            background-color: #000;
+            position: relative;
+        }
+
+        /* Inner glass reflection line */
+        .hero-device-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+        }
+
+        .hero-device-container.loaded {
+            opacity: 1;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            background-color: #1a1a1c;
+        }
+
+        /* --- Bento Grid Features Section --- */
+        .features {
+            background-color: var(--bg-color);
+            padding: 120px 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-headline {
+            text-align: center;
+            font-size: clamp(36px, 6vw, 56px);
+            font-weight: 600;
+            margin-bottom: 80px;
+            letter-spacing: -0.015em;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bento-card {
+            background-color: var(--bg-secondary);
+            border-radius: 36px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+        }
+
+        .bento-card:hover {
+            transform: scale(1.02) translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Layout spanning - Increased heights to prevent text overlap */
+        .card-large {
+            grid-column: span 12;
+            height: 750px;
+        }
+
+        .card-half {
+            grid-column: span 12;
+            height: 680px;
+        }
+
+        @media (min-width: 768px) {
+            .card-half {
+                grid-column: span 6;
+            }
+        }
+
+        .card-content {
+            padding: 40px;
+            z-index: 2;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card-content h3 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .card-content p {
             font-size: 18px;
+            color: var(--text-muted);
+            font-weight: 400;
+            line-height: 1.5;
+            max-width: 450px;
+        }
+
+        .card-img-wrapper {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            height: 60%;
+            /* Reduced from 85% to leave plenty of room for text */
+            aspect-ratio: 9 / 19.5;
+            /* Mobile aspect ratio */
+            overflow: hidden;
+            z-index: 1;
+            border-radius: 32px 32px 0 0;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            border: 8px solid #111;
+            /* Simulates mobile bezel */
+            border-bottom: none;
+            background: #000;
+        }
+
+        /* Glare effect overlay for the screen */
+        .card-img-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%);
+            transform: skewX(-25deg);
+            z-index: 2;
+            pointer-events: none;
+            transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bento-card:hover .card-img-wrapper::after {
+            left: 150%;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Screen content zoom and slide animation on hover */
+        .bento-card:hover .card-img-wrapper img {
+            transform: scale(1.06) translateY(-12px);
+        }
+
+        /* --- Dark Mode / Liquid Glass Immersive Section --- */
+        .immersive {
+            padding: 160px 20px;
+            background-color: #000;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated background blobs for the glass to blur */
+        .bg-blob {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.6;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            background: #6366f1;
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            background: #14b8a6;
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(60px, 60px) scale(1.15);
+            }
+        }
+
+        .glass-panel {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 800px;
+            padding: 80px 40px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            /* Soft inner glow */
+            box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-panel h2 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .glass-panel p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .btn-large {
+            display: inline-flex;
+            background: #fff;
+            color: #000;
+            padding: 20px 44px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-large:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--bg-color);
+            padding: 60px 20px 40px 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .footer-notes {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .footer-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .contact-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-link:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Sliding Animation Utilities --- */
+        .reveal-up,
+        .reveal-left,
+        .reveal-right {
+            opacity: 0;
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
+        }
+
+        .reveal-up {
+            transform: translateY(60px);
+        }
+
+        .reveal-left {
+            transform: translateX(-50px) translateY(20px);
+        }
+
+        .reveal-right {
+            transform: translateX(50px) translateY(20px);
+        }
+
+        .reveal-up.active,
+        .reveal-left.active,
+        .reveal-right.active {
+            opacity: 1;
+            transform: translate(0, 0);
         }
     </style>
 </head>
 
 <body>
-    <canvas id="particlesCanvas"></canvas>
 
-    <div class="dynamic-island-header">
-        <div>
-            <span style="font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px;" id="userNameDisplay">Student
-                Hub</span>
-            <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);" id="dateDisplay">
-                Syncing Architecture...</div>
+    <!-- 1. Global Navigation (Dark Liquid Glass) -->
+    <nav class="global-nav liquid-glass-dark">
+        <ul class="global-nav-list">
+            <li>
+                <!-- Clicking logo scrolls to top -->
+                <a href="#" style="opacity: 1;" aria-label="Home">
+                    <i class="ph-fill ph-planet" style="font-size: 18px;"></i>
+                </a>
+            </li>
+            <!-- Updated IDs matching the sections below -->
+            <li><a href="#workspace">Workspace</a></li>
+            <li><a href="#lab">Science Lab</a></li>
+            <li><a href="#study">Study Hub</a></li>
+            <li><a href="#utilities">Utilities</a></li>
+            <li><a href="#support">Support</a></li>
+        </ul>
+    </nav>
+
+    <!-- 2. Local/Sticky Navigation (Light Liquid Glass) -->
+    <nav class="local-nav liquid-glass-light" id="localNav">
+        <div class="local-nav-content">
+            <a href="#" class="local-title">Oasis AI</a>
+            <a href="https://github.com/Sanskar-satao/Oasis-AI-mobile/releases/download/Beta-v1.2/Oasis-AI.apk"
+                class="btn-download" download>
+                <i class="ph ph-android-logo"></i> Download Beta v1.2
+            </a>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div class="btn btn-ghost" onclick="openLevelModal()"
-                style="padding: 6px 12px; font-size: 0.75rem; border-radius: 20px; background: rgba(var(--primary-rgb), 0.08); border-color: rgba(var(--primary-rgb), 0.15);">
-                <i class="ph ph-trophy" style="color: var(--primary)"></i> Lvl <span id="lvlDisplay">1</span>
-            </div>
-            <button class="btn btn-ghost" onclick="toggleSettings()" style="padding: 10px; border-radius: 50%;">
-                <i class="ph ph-sliders" style="font-size: 1.15rem;"></i>
-            </button>
-        </div>
-    </div>
+    </nav>
 
-    <main class="app-container" id="mainScroll">
+    <!-- 3. Hero Section with Scroll Animation -->
+    <main>
+        <section class="hero">
+            <h1 class="reveal-up">Profoundly powerful.<br>Incredibly simple.</h1>
+            <h2 class="reveal-up" style="transition-delay: 0.1s;">The ultimate student matrix. Notebooks, periodic
+                tables, smart calculators, and AI flashcards—all seamlessly integrated.</h2>
 
-        <section id="dashboard" class="section active">
-            <div style="position:relative; margin-bottom: 14px;">
-                <i class="ph ph-magnifying-glass"
-                    style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
-                <input type="text" id="dashSearchInput" class="input-box"
-                    placeholder="Launch shortcut or search knowledge matrix..." style="padding-left:42px;"
-                    onkeypress="dashSearchEnter(event)">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-                <div class="bento-card" style="margin-bottom:0; text-align: center; padding: 14px;">
-                    <div style="font-size: 1.7rem; font-weight: 800; color: var(--primary);" id="tasksCountDisplay">0
-                    </div>
-                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Active Nodes
-                    </div>
-                </div>
-                <div class="bento-card" style="margin-bottom:0; text-align: center; padding: 14px;"
-                    onclick="nav('workspace')">
-                    <div style="font-size: 1.7rem; font-weight: 800; color: var(--secondary);" id="notesCountDisplay">0
-                    </div>
-                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Memos Stored
-                    </div>
-                </div>
-            </div>
-
-            <div class="bento-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <h3
-                        style="margin:0; font-size:0.9rem; font-weight:700; text-transform: uppercase; letter-spacing: 0.5px;">
-                        Core Objectives</h3>
-                    <button class="btn btn-primary" onclick="addTaskPrompt()"
-                        style="padding:6px 12px; font-size:0.75rem;"><i class="ph ph-plus"></i> Add Item</button>
-                </div>
-                <div id="taskListContainer"></div>
-            </div>
-        </section>
-
-        <section id="workspace" class="section">
-            <div class="sub-tabs">
-                <button class="btn btn-ghost active" id="subBtnNotes"
-                    onclick="switchWorkspaceSubTab('notes')">Notebook</button>
-                <button class="btn btn-ghost" id="subBtnFocus" onclick="switchWorkspaceSubTab('focus')">Focus
-                    Core</button>
-                <button class="btn btn-ghost" id="subBtnBoard"
-                    onclick="switchWorkspaceSubTab('board')">Sketchpad</button>
-            </div>
-
-            <div id="ws-notes">
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <button class="btn btn-primary" onclick="createNewNote()"
-                        style="flex:1; padding: 10px; font-size: 0.8rem;"><i class="ph ph-plus"></i> New
-                        Document</button>
-                    <button class="btn btn-ghost" onclick="deleteCurrentNote()" style="color:#ef4444; padding: 10px;"><i
-                            class="ph ph-trash"></i></button>
-                    <button class="btn btn-ghost" onclick="generateFlashcardsFromNote()"
-                        style="color:var(--primary); padding:10px;"><i class="ph ph-sparkle"></i> Synthetic AI</button>
-                </div>
-                <select id="notesSelect" class="input-box" style="margin-bottom: 12px;"
-                    onchange="selectNote(this.value)"></select>
-                <input type="text" id="noteTitleInput" class="input-box" placeholder="Title Block"
-                    style="margin-bottom: 8px;" oninput="autoSaveNote()">
-                <textarea id="noteEditorTextarea" class="input-box" style="height: 160px; resize: none;"
-                    placeholder="Input operational structural parameters text data..."
-                    oninput="autoSaveNote()"></textarea>
-                <div style="font-size: 0.7rem; color:var(--text-muted); text-align:right; margin-top:4px;"
-                    id="noteStatsSpan">0 words</div>
-            </div>
-
-            <div id="ws-focus" style="display:none; text-align:center;">
-                <div class="bento-card">
-                    <div style="font-size: 3.8rem; font-family:var(--font-mono); font-weight:700; margin-bottom:12px; color:var(--primary);"
-                        id="focusClockDisplay">25:00</div>
-                    <div style="display:flex; gap:8px; justify-content:center; margin-bottom:16px;">
-                        <button class="btn btn-primary" id="btnToggleFocus" onclick="toggleFocusTimer()"><i
-                                class="ph ph-play"></i> Run Core</button>
-                        <button class="btn btn-ghost" onclick="resetFocusTimer()"><i
-                                class="ph ph-arrow-counter-clockwise"></i> Reset</button>
-                    </div>
-                    <select id="focusModeSelect" class="input-box" onchange="changeFocusMode(this.value)">
-                        <option value="25">🍅 Pomodoro (25m)</option>
-                        <option value="5">☕ Short Rest (5m)</option>
-                        <option value="15">🛋️ Long Rest (15m)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="ws-board" style="display:none;">
-                <div style="display:flex; gap:6px; margin-bottom:8px;">
-                    <button class="btn btn-primary" onclick="setWbTool('draw', this)" style="flex:1; padding:8px;"><i
-                            class="ph ph-pencil"></i> Draw Matrix</button>
-                    <button class="btn btn-ghost" onclick="setWbTool('erase', this)" style="flex:1; padding:8px;"><i
-                            class="ph ph-eraser"></i> Erase</button>
-                    <button class="btn btn-ghost" onclick="clearWb()" style="padding:8px; color:#ef4444;"><i
-                            class="ph ph-trash"></i></button>
-                </div>
-                <canvas id="wbCanvas"></canvas>
-            </div>
-        </section>
-
-        <section id="lab" class="section">
-            <div class="sub-tabs" id="labTabsContainer">
-                <button class="btn btn-primary" onclick="switchLabSubTab('elements', this)">118 Grid</button>
-                <button class="btn btn-ghost" onclick="switchLabSubTab('desk', this)">AI Desk</button>
-                <button class="btn btn-ghost" onclick="switchLabSubTab('reac', this)">Reactives</button>
-                <button class="btn btn-ghost" onclick="switchLabSubTab('gas', this)">Gas Laws</button>
-                <button class="btn btn-ghost" onclick="switchLabSubTab('physics', this)">Kinematics</button>
-            </div>
-
-            <div id="lab-elements" class="lab-sub-section">
-                <div class="pt-scroll-container">
-                    <div class="pt-grid" id="ptGrid"></div>
-                </div>
-                <div id="elementInspector" class="bento-card"
-                    style="margin-top:12px; display:none; background: rgba(0,0,0,0.35);">
-                    <h4 id="inspectName" style="margin:0 0 4px 0; color:var(--primary); font-size: 1.05rem;">Descriptor
-                    </h4>
-                    <p style="margin:0; font-size:0.8rem; color:var(--text-muted); font-family: var(--font-mono)">Atomic
-                        Mass: <span id="inspectMass">-</span> g/mol | Protons: <span id="inspectNum">-</span> | Class:
-                        <span id="inspectCat">-</span>
-                    </p>
-                </div>
-            </div>
-
-            <div id="lab-desk" class="lab-sub-section" style="display:none;">
-                <div class="bento-card">
-                    <input type="text" class="input-box" id="chemReactants"
-                        placeholder="Reactants entry formula (e.g., HCl + NaOH)" style="margin-bottom:10px;">
-                    <button class="btn btn-primary" style="width:100%" onclick="predictReaction()">Synthesize Chemical
-                        Products</button>
-                    <div id="reactResult"
-                        style="margin-top:12px; font-weight:600; font-family:var(--font-mono); font-size:0.85rem; color:var(--secondary); word-break:break-all;">
-                    </div>
-                </div>
-            </div>
-
-            <div id="lab-reac" class="lab-sub-section" style="display:none;">
-                <div class="bento-card" style="max-height:48vh; overflow-y:auto;" id="reactivityContainer"></div>
-            </div>
-
-            <div id="lab-gas" class="lab-sub-section" style="display:none;">
-                <div class="bento-card">
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <input type="number" id="gasP" class="input-box" placeholder="Pressure (P) in atm">
-                        <input type="number" id="gasV" class="input-box" placeholder="Volume (V) in L">
-                        <input type="number" id="gasN" class="input-box" placeholder="Moles (n)">
-                        <input type="number" id="gasT" class="input-box" placeholder="Temperature (T) in K">
-                        <button class="btn btn-primary" onclick="calcGasLaw()">Solve PV=nRT Metrics</button>
-                    </div>
-                    <div id="gasRes"
-                        style="margin-top:12px; font-weight:700; text-align:center; color:var(--secondary);"></div>
-                </div>
-            </div>
-
-            <div id="lab-physics" class="lab-sub-section" style="display:none;">
-                <div class="bento-card">
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Provide exactly 3
-                        parameters tracking vectors:</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-                        <input type="number" id="kinU" class="input-box" placeholder="Init Velocity (u)">
-                        <input type="number" id="kinV" class="input-box" placeholder="Final Velocity (v)">
-                        <input type="number" id="kinA" class="input-box" placeholder="Acceleration (a)">
-                        <input type="number" id="kinT" class="input-box" placeholder="Time length (t)">
-                        <input type="number" id="kinS" class="input-box" placeholder="Displacement (s)"
-                            style="grid-column: span 2;">
-                    </div>
-                    <button class="btn btn-primary" style="width:100%" onclick="calcKinematics()">Process Kinematic
-                        Vectors</button>
-                    <div id="kinRes" style="margin-top:10px; font-weight:bold; font-size:0.85rem; text-align:center;">
-                    </div>
+            <!-- Main Hero Screenshot with Ambient Glow -->
+            <div class="hero-device-wrapper">
+                <div class="hero-device-container" id="heroDevice">
+                    <!-- Add your dashboard screenshot here -->
+                    <img src="assets/screenshots/dashboard.png" alt="Oasis AI Dashboard" class="hero-img">
                 </div>
             </div>
         </section>
 
-        <section id="study" class="section">
-            <div style="position:relative; margin-bottom:12px;">
-                <i class="ph ph-globe"
-                    style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted)"></i>
-                <input type="text" class="input-box" id="wikiSearch" placeholder="Query data repository core streams..."
-                    style="padding-left:42px;" onkeypress="if(event.key==='Enter') searchKnowledgeBase()">
-            </div>
-            <div class="sub-tabs" id="kbTabsContainer">
-                <button class="btn btn-primary" onclick="setSearchMode('wikipedia', this)">Wikipedia</button>
-                <button class="btn btn-ghost" onclick="setSearchMode('academic', this)">Academic</button>
-                <button class="btn btn-ghost" onclick="setSearchMode('web', this)">Oasis Web</button>
-                <button class="btn btn-ghost" onclick="setSearchMode('image', this)">Image Index</button>
-                <button class="btn btn-ghost" onclick="setSearchMode('cards', this)">Flashcards</button>
-            </div>
+        <!-- 4. Bento Box Feature Grid -->
+        <section class="features">
+            <h2 class="section-headline reveal-up">Get to know your new architecture.</h2>
 
-            <div id="studyContentArea">
-                <div id="wikiResults"
-                    style="display:flex; flex-direction:column; gap:10px; max-height:48vh; overflow-y:auto;"></div>
+            <div class="bento-grid">
 
-                <div id="flashcardsModule" style="display:none;">
-                    <div class="flashcard-shell" id="fcShell" onclick="flipCard()">
-                        <div class="flashcard-inner" id="fcInner">
-                            <div class="flashcard-side flashcard-front">
-                                <span
-                                    style="font-size:0.7rem; text-transform:uppercase; color:var(--primary); margin-bottom:10px; font-weight:700;">Question
-                                    Node</span>
-                                <div id="fcFront" style="font-weight:600; font-size:1.1rem;">Loading deck array
-                                    stream...</div>
-                            </div>
-                            <div class="flashcard-side flashcard-back">
-                                <span
-                                    style="font-size:0.7rem; text-transform:uppercase; color:var(--secondary); margin-bottom:10px; font-weight:700;">Verified
-                                    Matrix Answer</span>
-                                <div id="fcBack" style="font-weight:600; font-size:1.1rem;">Loading solution
-                                    parameter...</div>
-                            </div>
-                        </div>
+                <!-- Large Card: Workspace (Linked to #workspace) -->
+                <div id="workspace" class="bento-card card-large reveal-up">
+                    <div class="card-content">
+                        <h3>Unified Workspace</h3>
+                        <p>Sync your architecture with an integrated notebook, drawing sketchpad, and a Pomodoro Focus
+                            Core to keep you dialed in.</p>
                     </div>
-                    <div style="display:grid; grid-template-columns:1fr auto; gap:10px;">
-                        <button class="btn btn-primary" onclick="nextCard()">Next Card Pattern <i
-                                class="ph ph-arrow-right"></i></button>
-                        <button class="btn btn-ghost" onclick="newFlashcard()"><i class="ph ph-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="utilities" class="section">
-            <div class="sub-tabs">
-                <button class="btn btn-ghost active" id="subBtnFin" onclick="switchUtilSubTab('fin')">Ledger</button>
-                <button class="btn btn-ghost" id="subBtnMath" onclick="switchUtilSubTab('math')">Calculators</button>
-                <button class="btn btn-ghost" id="subBtnArcade" onclick="switchUtilSubTab('arcade')">Arcade</button>
-            </div>
-
-            <div id="util-fin">
-                <div class="bento-card">
-                    <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Outflow
-                        Allocation</div>
-                    <div style="font-size:1.9rem; font-weight:800; color:var(--primary); margin-bottom:12px;">$<span
-                            id="totalExp">0.00</span></div>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <input type="text" id="expDesc" class="input-box" placeholder="Item Parameter Label">
-                        <input type="number" id="expAmount" class="input-box" placeholder="Value Amount ($)">
-                        <select id="expCategory" class="input-box">
-                            <option value="Food">🍔 Food & Dining</option>
-                            <option value="Transport">🚌 Transport Matrix</option>
-                            <option value="Edu">📚 Academic Logs</option>
-                            <option value="Ent">🎮 Arcade Entertainment</option>
-                            <option value="Other">📦 Miscellaneous Row</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="addExpense()">Inject Expenditure Node</button>
-                    </div>
-                </div>
-                <div class="bento-card" style="max-height:22vh; overflow-y:auto; padding:6px;" id="expList"></div>
-            </div>
-
-            <div id="util-math" style="display:none;">
-                <div class="bento-card">
-                    <div
-                        style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">
-                        Grade Vector Projector</div>
-                    <div style="display:flex; gap:6px; margin-bottom:10px;">
-                        <input type="number" id="gpCurrent" class="input-box" placeholder="Current %">
-                        <input type="number" id="gpTarget" class="input-box" placeholder="Target %">
-                        <input type="number" id="gpWeight" class="input-box" placeholder="Weight %">
-                    </div>
-                    <button class="btn btn-primary" style="width:100%" onclick="calcFinalGrade()">Project Required Score
-                        Matrix</button>
-                    <div id="gpResult"
-                        style="margin-top:10px; font-size:0.8rem; text-align:center; font-weight:bold; color:var(--secondary);">
+                    <div class="card-img-wrapper">
+                        <!-- Add your workspace screenshot here -->
+                        <img src="assets/screenshots/workspace.png" alt="Workspace Interface">
                     </div>
                 </div>
 
-                <div class=" bento-card">
-                    <div
-                        style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">
-                        pH Algorithm Processor</div>
-                    <div style="display:flex; gap:6px;">
-                        <input type="number" id="phVal" class="input-box" placeholder="pH exponent factor (0-14)">
-                        <button class="btn btn-ghost" onclick="calcPh()">Compute</button>
+                <!-- Half Card: Lab (Linked to #lab) -->
+                <div id="lab" class="bento-card card-half reveal-left">
+                    <div class="card-content">
+                        <h3>118 Grid & Lab</h3>
+                        <p>Access a full interactive periodic table, predict chemical reactions, and process vectors.
+                        </p>
                     </div>
-                    <div id="phMetricsResult"
-                        style="margin-top:10px; font-size:0.8rem; font-family:var(--font-mono); color:var(--secondary); line-height:1.4;">
-                    </div>
-                </div>
-            </div>
-
-            <div id="util-arcade" style="display:none; text-align:center;">
-                <div id="quizSetup">
-                    <h4 style="margin:0 0 14px 0; color:var(--text-muted)">Initialize Knowledge Field Assessment
-                        Loops
-                    </h4>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                        <button class="btn btn-ghost" onclick="initQuiz(9)">General Knowledge</button>
-                        <button class="btn btn-ghost" onclick="initQuiz(18)">Computer Networks</button>
-                        <button class="btn btn-ghost" onclick="initQuiz(17)">Pure Sciences</button>
-                        <button class="btn btn-ghost" onclick="initQuiz(19)">Mathematical Spaces</button>
+                    <div class="card-img-wrapper">
+                        <!-- Add your lab screenshot here -->
+                        <img src="assets/screenshots/lab.png" alt="Science Lab">
                     </div>
                 </div>
 
-                <div id="quizPlay" style="display:none; text-align:left;">
-                    <div
-                        style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">
-                        <span>Frame Row <span id="qNum">1</span>/5</span>
-                        <span>Points Stored: <span id="qScore">0</span></span>
+                <!-- Half Card: Study (Linked to #study) -->
+                <div id="study" class="bento-card card-half reveal-right" style="transition-delay: 0.1s;">
+                    <div class="card-content">
+                        <h3>Study Engines</h3>
+                        <p>Query Wikipedia and turn your notes into smart AI flashcards with a single tap.</p>
                     </div>
-                    <div id="qText" style="font-size:1.05rem; font-weight:600; margin-bottom:16px; line-height:1.4;">
-                        Accessing active question frame sequence indexes...</div>
-                    <div id="qOptions"></div>
-                    <div id="qFeedback"
-                        style="margin-top:12px; font-weight:bold; font-size:0.85rem; text-align:center;"></div>
+                    <div class="card-img-wrapper">
+                        <!-- Add your study hub screenshot here -->
+                        <img src="assets/screenshots/study.png" alt="Study Hub">
+                    </div>
                 </div>
 
-                <div id="quizResult" style="display:none;">
-                    <h3 style="margin:0 0 6px 0; color:var(--secondary)">Operational Verification Iteration
-                        Concluded
-                    </h3>
-                    <p style="margin:0 0 12px 0;">Successful parameters mapped: <span id="finalScore">0</span>/5</p>
-                    <div style="font-weight:bold; color:var(--primary); margin-bottom:16px; font-size:1.1rem;">
-                        +<span id="xpGain">0</span> XP Nodes Transferred</div>
-                    <button class="btn btn-primary" onclick="resetQuiz()">Re-verify Sector Channel</button>
+                <!-- Large Card: Utilities (Linked to #utilities) -->
+                <div id="utilities" class="bento-card card-large reveal-up">
+                    <div class="card-content">
+                        <h3>Advanced Utilities</h3>
+                        <p>Manage your ledgers, calculate grades, and jump into the Arcade to verify your knowledge
+                            fields with structured quiz iterations.</p>
+                    </div>
+                    <div class="card-img-wrapper">
+                        <!-- Add your utilities screenshot here -->
+                        <img src="assets/screenshots/utilities.png" alt="Utilities Interface">
+                    </div>
                 </div>
+
             </div>
         </section>
 
+        <!-- 5. Liquid Glass Dark Immersive Section -->
+        <section class="immersive">
+            <!-- Background floating color blobs -->
+            <div class="bg-blob blob-1"></div>
+            <div class="bg-blob blob-2"></div>
+
+            <!-- Liquid Glass Panel -->
+            <div class="glass-panel liquid-glass-dark reveal-up">
+                <h2>Your academic workflow, optimized.</h2>
+                <p>Available exclusively via Android APK. Download the Beta now to upgrade your entire study ecosystem.
+                </p>
+                <!-- Replace link with actual APK URL -->
+                <a href="https://github.com/Sanskar-satao/Oasis-AI-mobile/releases/download/Beta-v1.2/Oasis-AI.apk"
+                    class="btn-large" download><i class="ph ph-android-logo"
+                        style="margin-right: 8px; font-size: 22px;"></i> Download Beta v1.2</a>
+            </div>
+        </section>
     </main>
 
-    <div class="floating-nav-island">
-        <a class="nav-tab active" id="nav-dashboard" onclick="nav('dashboard', this)">
-            <i class="ph ph-grid-four"></i><span></span>
-        </a>
-        <a class="nav-tab" id="nav-workspace" onclick="nav('workspace', this)">
-            <i class="ph ph-cards"></i><span></span>
-        </a>
-        <a class="nav-tab" id="nav-lab" onclick="nav('lab', this)">
-            <i class="ph ph-atom"></i><span></span>
-        </a>
-        <a class="nav-tab" id="nav-study" onclick="nav('study', this)">
-            <i class="ph ph-books"></i><span></span>
-        </a>
-        <a class="nav-tab" id="nav-utilities" onclick="nav('utilities', this)">
-            <i class="ph ph-cpu"></i><span></span>
-        </a>
-    </div>
-
-    <div class="settings-overlay" id="settingsOverlay">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="margin:0; font-size:1.25rem; font-weight:700; letter-spacing:-0.3px;">Oasis Settings</h2>
-            <button class="btn btn-ghost" onclick="toggleSettings()" style="padding:8px; border-radius:50%;">
-                <i class="ph ph-x" style="font-size:1.15rem;"></i>
-            </button>
-        </div>
-
-        <div class="bento-card" style="margin-bottom: 12px; padding: 14px;">
-            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">User Identity
+    <!-- 6. Footer (Linked to #support) -->
+    <footer id="support">
+        <div class="footer-content">
+            <div class="footer-notes">
+                <p>1. AI processing capabilities require an active internet connection and valid API keys (Gemini,
+                    Google Custom Search) entered in the app settings.</p>
+                <p>2. Beta v1.2 is available exclusively for Android devices via APK side-loading. Hosted securely via
+                    GitHub.</p>
+                <p>3. Screenshots shown are for illustration purposes. Actual app layout may vary slightly depending on
+                    device screen size.</p>
             </div>
-            <input type="text" class="input-box" id="settingName" placeholder="Enter username..."
-                oninput="updateName(this.value)">
-        </div>
 
-        <div class="bento-card" style="margin-bottom: 12px; padding: 14px;">
-            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Google Custom
-                Search Engine</div>
-            <input type="password" class="input-box" id="settingGoogleApiKey" placeholder="Google API Key"
-                oninput="saveApiKey('m_oasis_google_key', this.value)" style="margin-bottom:8px;">
-            <input type="text" class="input-box" id="settingGoogleCx" placeholder="Search Engine ID (CX Key)"
-                oninput="saveApiKey('m_oasis_google_cx', this.value)">
-        </div>
+            <div class="footer-bottom">
+                <div class="copyright">
+                    Copyright © 2026 Oasis AI. All rights reserved.
+                </div>
 
-        <div class="bento-card" style="margin-bottom: 12px; padding: 14px;">
-            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Gemini AI
-                Interface</div>
-            <input type="password" class="input-box" id="settingGeminiApiKey" placeholder="Gemini Key Token"
-                oninput="saveApiKey('m_oasis_gemini_key', this.value)">
-        </div>
-
-        <div class="bento-card"
-            style="margin-bottom: 12px; padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Display
-                    Theme</div>
-                <select class="input-box" onchange="setAppTheme(this.value)" id="appThemeSelect">
-                    <option value="dark">🌌 Deep Space Dark</option>
-                    <option value="light">☀️ Refraction Light</option>
-                    <option value="water">💧 Liquid Environment</option>
-                </select>
-            </div>
-            <div>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">App
-                    Typography</div>
-                <select class="input-box" id="settingFont" onchange="updateFont(this.value)">
-                    <option value="'Plus Jakarta Sans', sans-serif">Jakarta Geometric</option>
-                    <option value="system-ui, -apple-system, sans-serif">System Native</option>
-                    <option value="'JetBrains Mono', monospace">Unified Monospace</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="bento-card" style="padding: 14px;">
-            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">System
-                Portability & Storage</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
-                <button class="btn btn-ghost" onclick="exportSystemBackup()"><i class="ph ph-download"></i> Export
-                    JSON</button>
-                <button class="btn btn-ghost" onclick="$('importFileInput').click()"><i class="ph ph-upload"></i> Import
-                    JSON</button>
-            </div>
-            <input type="file" id="importFileInput" style="display:none;" accept=".json"
-                onchange="importSystemBackup(event)">
-            <button class="btn btn-ghost" style="width:100%; color:#f43f5e; border-color:rgba(244,63,94,0.2)"
-                onclick="wipeData()">Purge Database Memory</button>
-        </div>
-    </div>
-
-    <div id="levelModal" class="settings-overlay" style="z-index: 2500;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0;">XP Nodes Matrix Ledger</h3>
-            <button class="btn btn-ghost" onclick="$('levelModal').classList.remove('active')"
-                style="padding:8px; border-radius:50%;"><i class="ph ph-x"></i></button>
-        </div>
-        <div class="bento-card" style="text-align:center;">
-            <div style="font-size:1.05rem; font-weight:700; margin-bottom:10px;">Operator Evolution: Level <span
-                    id="lmCurrentLevel">1</span></div>
-            <div
-                style="height:12px; background:var(--surface-3); border-radius:6px; overflow:hidden; margin-bottom:10px;">
-                <div id="lmXpProgress"
-                    style="height:100%; width:0%; background:var(--primary); transition: width 0.4s var(--spring-curve);">
+                <div class="footer-contact">
+                    Developer Contact:
+                    <!-- Put your email here -->
+                    <a href="mailto:your.email@example.com" class="contact-link">your.email@example.com</a>
                 </div>
             </div>
-            <div style="font-size:0.8rem; color:var(--text-muted);" id="lmXpText">0 / 100 System Matrices Verified</div>
         </div>
-    </div>
+    </footer>
 
-    <div class="preview-modal" id="imagePreviewModal" onclick="if(event.target===this) closeImagePreview()">
-        <div class="preview-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-                <button class="btn btn-ghost" onclick="closeImagePreview()" style="padding: 6px; border-radius: 50%;"><i
-                        class="ph ph-x"></i></button>
-            </div>
-            <img id="previewModalImg" src=""
-                style="max-width: 100%; max-height: 52vh; object-fit: contain; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 14px; background: #000;">
-            <h4 id="previewModalTitle"
-                style="margin: 0 0 14px 0; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-main); font-weight: 600;">
-                Image Asset Descriptor Context</h4>
-            <button class="btn btn-primary" id="previewModalLink" style="width: 100%; font-size: 0.85rem;"
-                onclick="window.open(this.dataset.url, '_blank')"><i class="ph ph-globe"></i> Access Web Host Resource
-                Trace</button>
-        </div>
-    </div>
-
+    <!-- Scripts for Scroll Animations -->
     <script>
-        const $ = id => document.getElementById(id);
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // SYSTEM DATA STRUCT INSTANCE REGISTER CORE HOOKS
-        let tasks = JSON.parse(localStorage.getItem('m_oasis_tasks')) || [];
-        let notesData = JSON.parse(localStorage.getItem('m_oasis_notes_data')) || [{ id: Date.now(), title: 'Reference Workspace Block', content: 'Initialization protocol trace terminal active.' }];
-        let currentNoteId = notesData.length > 0 ? notesData[0].id : null;
-        let expenses = JSON.parse(localStorage.getItem('m_oasis_expenses')) || [];
-        let userXP = parseInt(localStorage.getItem('m_oasis_xp')) || 0;
-        let currentSearchMode = 'wikipedia';
-        let googleSearchCacheItems = [];
+            // 1. Initial Load effect for Hero Image
+            setTimeout(() => {
+                document.getElementById('heroDevice').classList.add('loaded');
+            }, 150);
 
-        let googleApiKey = localStorage.getItem('m_oasis_google_key') || '';
-        let googleCx = localStorage.getItem('m_oasis_google_cx') || '';
-        let geminiApiKey = localStorage.getItem('m_oasis_gemini_key') || '';
+            // 2. Apple-Style Scroll Scaling Animation
+            const heroDevice = document.getElementById('heroDevice');
 
-        // SYSTEM GLOBAL REDIRECT INTENT SHORTCUT CONFIG CORE LOGIC RULES
-        const appIntentMatrix = { 'youtube': 'https://youtube.com', 'spotify': 'http://googleusercontent.com/spotify.com/3', 'drive': 'https://drive.google.com' };
-        function evaluateAppLaunchIntent(str) {
-            const token = str.trim().toLowerCase();
-            if (appIntentMatrix[token]) { window.open(appIntentMatrix[token], '_blank'); return true; }
-            return false;
-        }
+            window.addEventListener('scroll', () => {
+                let scrollY = window.scrollY;
+                let windowHeight = window.innerHeight;
 
-        // NAVIGATION MODULE MULTI-VIEW PORT LAYERS SWITCH CHANNELS LOGIC CORE
-        function nav(sectionId, element) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(n => n.classList.remove('active'));
-            $(sectionId).classList.add('active');
-            if (element) element.classList.add('active');
-            else { const tab = $('nav-' + sectionId); if (tab) tab.classList.add('active'); }
-            if (sectionId === 'workspace') { setTimeout(resizeWbCanvas, 50); renderNotesOptions(); }
-            if (sectionId === 'lab') { renderPeriodicTable(); renderFullReactivitySeries(); }
-            if (sectionId === 'study') { renderFlashcard(); }
-        }
+                // Scale device up as user scrolls down through the hero section
+                if (scrollY < windowHeight) {
+                    // Calculate progress (0 to 1)
+                    let progress = scrollY / (windowHeight * 0.7);
+                    if (progress > 1) progress = 1;
 
-        function toggleSettings() {
-            $('settingsOverlay').classList.toggle('active');
-            if ($('settingsOverlay').classList.contains('active')) {
-                $('settingName').value = localStorage.getItem('m_oasis_name') || 'Student Operator';
-                $('settingGoogleApiKey').value = googleApiKey;
-                $('settingGoogleCx').value = googleCx;
-                $('settingGeminiApiKey').value = geminiApiKey;
-            }
-        }
+                    // Starts at 0.85 scale and 50px translateY, ends at 1.0 scale and 0px translateY
+                    let scale = 0.85 + (0.15 * progress);
+                    let translateY = 50 - (50 * progress);
 
-        function updateName(val) { localStorage.setItem('m_oasis_name', val); $('userNameDisplay').innerText = val || 'Student Operator'; }
-        function saveApiKey(key, val) { localStorage.setItem(key, val.trim()); if (key === 'm_oasis_google_key') googleApiKey = val; if (key === 'm_oasis_google_cx') googleCx = val; if (key === 'm_oasis_gemini_key') geminiApiKey = val; }
+                    heroDevice.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                }
+            });
 
-        function updateTime() {
-            const now = new Date();
-            $('dateDisplay').innerText = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + ' | ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        }
-
-        // DATA PAYLOAD SCHEMA PORTABILITY CONTROLLERS MANAGEMENT LOG
-        function exportSystemBackup() {
-            const backup = { tasks, notesData, expenses, userXP, googleApiKey, googleCx, geminiApiKey, name: localStorage.getItem('m_oasis_name'), flashcards };
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-            const dynamicAnchor = document.createElement('a'); dynamicAnchor.href = URL.createObjectURL(blob);
-            dynamicAnchor.download = `Oasis_Mobile_Bento_Backup_${new Date().toISOString().slice(0, 10)}.json`; dynamicAnchor.click();
-        }
-
-        function importSystemBackup(event) {
-            const file = event.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.tasks) localStorage.setItem('m_oasis_tasks', JSON.stringify(data.tasks));
-                    if (data.notesData) localStorage.setItem('m_oasis_notes_data', JSON.stringify(data.notesData));
-                    if (data.expenses) localStorage.setItem('m_oasis_expenses', JSON.stringify(data.expenses));
-                    if (data.userXP !== undefined) localStorage.setItem('m_oasis_xp', data.userXP);
-                    if (data.name) localStorage.setItem('m_oasis_name', data.name);
-                    if (data.flashcards) localStorage.setItem('m_oasis_flashcards', JSON.stringify(data.flashcards));
-                    location.reload();
-                } catch (err) { alert("Matrix structural mismatch during backup processing stream loop mapping."); }
+            // 3. Intersection Observer for 'Reveal' text and cards
+            const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
+            const observerOptions = {
+                root: null,
+                threshold: 0.1, // Triggers when 10% is visible
+                rootMargin: "0px 0px -50px 0px"
             };
-            reader.readAsText(file);
-        }
-        function wipeData() { if (confirm("Flush system schema registry storage arrays index permanently?")) { localStorage.clear(); location.reload(); } }
 
-        function addXP(amt) { userXP += amt; localStorage.setItem('m_oasis_xp', userXP); updateLevelMetrics(); }
-        function updateLevelMetrics() {
-            const lvl = Math.floor(userXP / 100) + 1;
-            $('lvlDisplay').innerText = lvl; $('lmCurrentLevel').innerText = lvl;
-            $('lmXpProgress').style.width = (userXP % 100) + '%';
-            $('lmXpText').innerText = `${userXP % 100} / 100 Operational Threshold Nodes`;
-        }
-        function openLevelModal() { $('levelModal').classList.add('active'); }
-
-        function dashSearchEnter(e) {
-            if (e.key === 'Enter') {
-                const q = $('dashSearchInput').value.trim(); if (!q) return;
-                if (evaluateAppLaunchIntent(q)) { $('dashSearchInput').value = ''; return; }
-                $('wikiSearch').value = q; nav('study'); searchKnowledgeBase();
-            }
-        }
-
-        // OBJECTIVE TRACKER SYSTEM ARRAYS DATA MANAGEMENT CONTROLS
-        function renderTasks() {
-            const container = $('taskListContainer'); container.innerHTML = '';
-            $('tasksCountDisplay').innerText = tasks.filter(t => t.status !== 'done').length;
-            if (tasks.length === 0) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.8rem;padding:12px 0;">Objectives sequence space current register tracking path empty.</div>'; return; }
-            tasks.forEach(t => {
-                container.innerHTML += `
-                    <div class="task-row ${t.status === 'done' ? 'done' : ''}">
-                        <div style="display:flex; align-items:center; gap:12px; max-width:82%;">
-                            <input type="checkbox" style="accent-color:var(--primary); width:17px; height:17px;" ${t.status === 'done' ? 'checked' : ''} onchange="toggleTaskStatus(${t.id}, this.checked)">
-                            <span style="font-size:0.85rem; font-weight: 500;">${t.text}</span>
-                        </div>
-                        <i class="ph ph-trash" style="color:#ef4444; font-size:1.1rem; padding: 4px;" onclick="deleteTask(${t.id})"></i>
-                    </div>`;
-            });
-        }
-        function addTaskPrompt() { const val = prompt("Input structural target benchmark variable context string text:"); if (val && val.trim()) { tasks.push({ id: Date.now(), text: val.trim(), status: 'todo' }); saveTasksArray(); } }
-        function toggleTaskStatus(id, checked) { const t = tasks.find(x => x.id === id); if (t) { t.status = checked ? 'done' : 'todo'; if (checked) addXP(20); saveTasksArray(); } }
-        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveTasksArray(); }
-        function saveTasksArray() { localStorage.setItem('m_oasis_tasks', JSON.stringify(tasks)); renderTasks(); }
-
-        // DOCUMENT WORKSPACE SUBSYSTEM MEMO HANDLERS INTERFACES CONTROLS
-        function switchWorkspaceSubTab(tab) {
-            ['notes', 'focus', 'board'].forEach(t => $('ws-' + t).style.display = t === tab ? 'block' : 'none');
-            ['Notes', 'Focus', 'Board'].forEach(t => $('subBtn' + t).classList.toggle('active', t.toLowerCase() === tab));
-            if (tab === 'board') setTimeout(resizeWbCanvas, 50);
-        }
-
-        function switchLabSubTab(tab, btn) {
-            ['elements', 'desk', 'reac', 'gas', 'physics'].forEach(t => $('lab-' + t).style.display = t === tab ? 'block' : 'none');
-            if (btn) {
-                btn.parentElement.querySelectorAll('.btn').forEach(b => {
-                    b.classList.remove('btn-primary');
-                    b.classList.add('btn-ghost');
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Animate only once
+                    }
                 });
-                btn.classList.remove('btn-ghost');
-                btn.classList.add('btn-primary');
-            }
-        }
+            }, observerOptions);
 
-        function renderNotesOptions() {
-            const sel = $('notesSelect'); sel.innerHTML = '';
-            notesData.forEach(n => sel.innerHTML += `<option value="${n.id}" ${n.id === currentNoteId ? 'selected' : ''}>${n.title || 'Untitled Structural Memo Document'}</option>`);
-            $('notesCountDisplay').innerText = notesData.length;
-        }
-        function selectNote(id) {
-            currentNoteId = parseInt(id); const note = notesData.find(n => n.id === currentNoteId);
-            if (note) { $('noteTitleInput').value = note.title; $('noteEditorTextarea').value = note.content; updateNoteStats(); }
-        }
-        function createNewNote() {
-            const newNote = { id: Date.now(), title: 'Memo Matrix Block Node', content: '' };
-            notesData.unshift(newNote); currentNoteId = newNote.id; renderNotesOptions(); selectNote(currentNoteId);
-        }
-        function deleteCurrentNote() {
-            if (notesData.length <= 1) return; notesData = notesData.filter(n => n.id !== currentNoteId); currentNoteId = notesData[0].id;
-            localStorage.setItem('m_oasis_notes_data', JSON.stringify(notesData)); renderNotesOptions(); selectNote(currentNoteId);
-        }
-        function autoSaveNote() {
-            const note = notesData.find(n => n.id === currentNoteId);
-            if (note) {
-                note.title = $('noteTitleInput').value; note.content = $('noteEditorTextarea').value;
-                localStorage.setItem('m_oasis_notes_data', JSON.stringify(notesData)); updateNoteStats();
-            }
-        }
-        function updateNoteStats() { const txt = $('noteEditorTextarea').value.trim(); $('noteStatsSpan').innerText = (txt ? txt.split(/\s+/).length : 0) + ' words'; }
+            revealElements.forEach(el => observer.observe(el));
 
-        async function generateFlashcardsFromNote() {
-            if (!geminiApiKey) { alert("Gemini core operational key array variable identifier undefined inside settings interface."); return; }
-            const activeNote = notesData.find(n => n.id === currentNoteId);
-            if (!activeNote || !activeNote.content.trim()) return;
-            alert("Model architecture processing text sequence streams synthesis loops..."); addXP(30);
-        }
-
-        // TIMERS INTERVAL ENGINE PROCESSING MATRIX CONTROLS LOGIC
-        let focusTimeRemaining = 25 * 60, focusTimerId = null, currentFocusDuration = 25;
-        function changeFocusMode(m) { clearInterval(focusTimerId); focusTimerId = null; currentFocusDuration = parseInt(m); focusTimeRemaining = currentFocusDuration * 60; updateFocusClockText(); $('btnToggleFocus').innerHTML = '<i class="ph ph-play"></i> Run Core'; }
-        function updateFocusClockText() { const mn = Math.floor(focusTimeRemaining / 60), sc = focusTimeRemaining % 60; $('focusClockDisplay').innerText = `${String(mn).padStart(2, '0')}:${String(sc).padStart(2, '0')}`; }
-        function toggleFocusTimer() {
-            if (focusTimerId) { clearInterval(focusTimerId); focusTimerId = null; $('btnToggleFocus').innerHTML = '<i class="ph ph-play"></i> Run Core'; }
-            else {
-                $('btnToggleFocus').innerHTML = '<i class="ph ph-pause"></i> Pause';
-                focusTimerId = setInterval(() => {
-                    focusTimeRemaining--; updateFocusClockText();
-                    if (focusTimeRemaining <= 0) { clearInterval(focusTimerId); focusTimerId = null; addXP(50); changeFocusMode(currentFocusDuration); alert("Countdown benchmark criteria satisfied loop iterations terminated. +50 XP"); }
-                }, 1000);
-            }
-        }
-        function resetFocusTimer() { changeFocusMode(currentFocusDuration); }
-
-        // CANVAS WORKSPACE WHITEBOARD DRAW CONTROLLER FUNCTIONS LOGIC
-        const wbCanvas = $('wbCanvas'); const wbCtx = wbCanvas.getContext('2d'); let isDrawing = false, wbTool = 'draw';
-        function resizeWbCanvas() { wbCanvas.width = wbCanvas.parentElement.clientWidth; wbCanvas.height = window.innerHeight * 0.42; wbCtx.lineCap = 'round'; wbCtx.lineWidth = 4; updateCanvasToolStyles(); }
-        function setWbTool(t, btn) { wbTool = t; btn.parentElement.querySelectorAll('.btn').forEach(b => b.className = 'btn btn-ghost'); btn.className = 'btn btn-primary'; updateCanvasToolStyles(); }
-        function updateCanvasToolStyles() { if (wbTool === 'draw') { wbCtx.strokeStyle = '#6366f1'; wbCtx.lineWidth = 4; } else { wbCtx.strokeStyle = '#09090b'; wbCtx.lineWidth = 24; } }
-        function clearWb() { if (confirm("Flush design canvas layer path sequences vectors mapping grid?")) wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height); }
-        function getTouchPos(e) { const r = wbCanvas.getBoundingClientRect(); const cx = e.touches ? e.touches[0].clientX : e.clientX; const cy = e.touches ? e.touches[0].clientY : e.clientY; return { x: cx - r.left, y: cy - r.top }; }
-        wbCanvas.addEventListener('mousedown', (e) => { isDrawing = true; const p = getTouchPos(e); wbCtx.beginPath(); wbCtx.moveTo(p.x, p.y); });
-        wbCanvas.addEventListener('mousemove', (e) => { if (!isDrawing) return; e.preventDefault(); const p = getTouchPos(e); wbCtx.lineTo(p.x, p.y); wbCtx.stroke(); });
-        window.addEventListener('mouseup', () => isDrawing = false);
-        wbCanvas.addEventListener('touchstart', (e) => { isDrawing = true; const p = getTouchPos(e); wbCtx.beginPath(); wbCtx.moveTo(p.x, p.y); }, { passive: false });
-        wbCanvas.addEventListener('touchmove', (e) => { if (!isDrawing) return; e.preventDefault(); const p = getTouchPos(e); wbCtx.lineTo(p.x, p.y); wbCtx.stroke(); }, { passive: false });
-        window.addEventListener('touchend', () => isDrawing = false);
-
-        // VIVID UNABRIDGED 118 ATOMIC PERIODIC TABLE ARRAY MATRIX CONFIG DATA
-        const ptData = [
-            { n: 1, s: "H", na: "Hydrogen", m: "1.008", c: 1, r: 1, cat: "nonmetal" },
-            { n: 2, s: "He", na: "Helium", m: "4.0026", c: 18, r: 1, cat: "noble" },
-            { n: 3, s: "Li", na: "Lithium", m: "6.94", c: 1, r: 2, cat: "alkali" },
-            { n: 4, s: "Be", na: "Beryllium", m: "9.0122", c: 2, r: 2, cat: "alkaline" },
-            { n: 5, s: "B", na: "Boron", m: "10.81", c: 13, r: 2, cat: "metalloid" },
-            { n: 6, s: "C", na: "Carbon", m: "12.011", c: 14, r: 2, cat: "nonmetal" },
-            { n: 7, s: "N", na: "Nitrogen", m: "14.007", c: 15, r: 2, cat: "nonmetal" },
-            { n: 8, s: "O", na: "Oxygen", m: "15.999", c: 16, r: 2, cat: "nonmetal" },
-            { n: 9, s: "F", na: "Fluorine", m: "18.998", c: 17, r: 2, cat: "nonmetal" },
-            { n: 10, s: "Ne", na: "Neon", m: "20.180", c: 18, r: 2, cat: "noble" },
-            { n: 11, s: "Na", na: "Sodium", m: "22.990", c: 1, r: 3, cat: "alkali" },
-            { n: 12, s: "Mg", na: "Magnesium", m: "24.305", c: 2, r: 3, cat: "alkaline" },
-            { n: 13, s: "Al", na: "Aluminium", m: "26.982", c: 13, r: 3, cat: "post" },
-            { n: 14, s: "Si", na: "Silicon", m: "28.085", c: 14, r: 3, cat: "metalloid" },
-            { n: 15, s: "P", na: "Phosphorus", m: "30.974", c: 15, r: 3, cat: "nonmetal" },
-            { n: 16, s: "S", na: "Sulfur", m: "32.06", c: 16, r: 3, cat: "nonmetal" },
-            { n: 17, s: "Cl", na: "Chlorine", m: "35.45", c: 17, r: 3, cat: "nonmetal" },
-            { n: 18, s: "Ar", na: "Argon", m: "39.948", c: 18, r: 3, cat: "noble" },
-            { n: 19, s: "K", na: "Potassium", m: "39.098", c: 1, r: 4, cat: "alkali" },
-            { n: 20, s: "Ca", na: "Calcium", m: "40.078", c: 2, r: 4, cat: "alkaline" },
-            { n: 21, s: "Sc", na: "Scandium", m: "44.956", c: 3, r: 4, cat: "transition" },
-            { n: 22, s: "Ti", na: "Titanium", m: "47.867", c: 4, r: 4, cat: "transition" },
-            { n: 23, s: "V", na: "Vanadium", m: "50.942", c: 5, r: 4, cat: "transition" },
-            { n: 24, s: "Cr", na: "Chromium", m: "51.996", c: 6, r: 4, cat: "transition" },
-            { n: 25, s: "Mn", na: "Manganese", m: "54.938", c: 7, r: 4, cat: "transition" },
-            { n: 26, s: "Fe", na: "Iron", m: "55.845", c: 8, r: 4, cat: "transition" },
-            { n: 27, s: "Co", na: "Cobalt", m: "58.933", c: 9, r: 4, cat: "transition" },
-            { n: 28, s: "Ni", na: "Nickel", m: "58.693", c: 10, r: 4, cat: "transition" },
-            { n: 29, s: "Cu", na: "Copper", m: "63.546", c: 11, r: 4, cat: "transition" },
-            { n: 30, s: "Zn", na: "Zinc", m: "65.38", c: 12, r: 4, cat: "transition" },
-            { n: 31, s: "Ga", na: "Gallium", m: "69.723", c: 13, r: 4, cat: "post" },
-            { n: 32, s: "Ge", na: "Germanium", m: "72.630", c: 14, r: 4, cat: "metalloid" },
-            { n: 33, s: "As", na: "Arsenic", m: "74.922", c: 15, r: 4, cat: "metalloid" },
-            { n: 34, s: "Se", na: "Selenium", m: "78.971", c: 16, r: 4, cat: "nonmetal" },
-            { n: 35, s: "Br", na: "Bromine", m: "79.904", c: 17, r: 4, cat: "nonmetal" },
-            { n: 36, s: "Kr", na: "Krypton", m: "83.798", c: 18, r: 4, cat: "noble" },
-            { n: 37, s: "Rb", na: "Rubidium", m: "85.468", c: 1, r: 5, cat: "alkali" },
-            { n: 38, s: "Sr", na: "Strontium", m: "87.62", c: 2, r: 5, cat: "alkaline" },
-            { n: 39, s: "Y", na: "Yttrium", m: "88.906", c: 3, r: 5, cat: "transition" },
-            { n: 40, s: "Zr", na: "Zirconium", m: "91.224", c: 4, r: 5, cat: "transition" },
-            { n: 41, s: "Nb", na: "Niobium", m: "92.906", c: 5, r: 5, cat: "transition" },
-            { n: 42, s: "Mo", na: "Molybdenum", m: "95.95", c: 6, r: 5, cat: "transition" },
-            { n: 43, s: "Tc", na: "Technetium", m: "(98)", c: 7, r: 5, cat: "transition" },
-            { n: 44, s: "Ru", na: "Ruthenium", m: "101.07", c: 8, r: 5, cat: "transition" },
-            { n: 45, s: "Rh", na: "Rhodium", m: "102.91", c: 9, r: 5, cat: "transition" },
-            { n: 46, s: "Pd", na: "Palladium", m: "106.42", c: 10, r: 5, cat: "transition" },
-            { n: 47, s: "Ag", na: "Silver", m: "107.87", c: 11, r: 5, cat: "transition" },
-            { n: 48, s: "Cd", na: "Cadmium", m: "112.41", c: 12, r: 5, cat: "transition" },
-            { n: 49, s: "In", na: "Indium", m: "114.82", c: 13, r: 5, cat: "post" },
-            { n: 50, s: "Sn", na: "Tin", m: "118.71", c: 14, r: 5, cat: "post" },
-            { n: 51, s: "Sb", na: "Antimony", m: "121.76", c: 15, r: 5, cat: "metalloid" },
-            { n: 52, s: "Te", na: "Tellurium", m: "127.60", c: 16, r: 5, cat: "metalloid" },
-            { n: 53, s: "I", na: "Iodine", m: "126.90", c: 17, r: 5, cat: "nonmetal" },
-            { n: 54, s: "Xe", na: "Xenon", m: "131.29", c: 18, r: 5, cat: "noble" },
-            { n: 55, s: "Cs", na: "Cesium", m: "132.91", c: 1, r: 6, cat: "alkali" },
-            { n: 56, s: "Ba", na: "Barium", m: "137.33", c: 2, r: 6, cat: "alkaline" },
-            { n: 57, s: "La", na: "Lanthanum", m: "138.91", c: 4, r: 9, cat: "lanthanide" },
-            { n: 58, s: "Ce", na: "Cerium", m: "140.12", c: 5, r: 9, cat: "lanthanide" },
-            { n: 59, s: "Pr", na: "Praseodymium", m: "140.91", c: 6, r: 9, cat: "lanthanide" },
-            { n: 60, s: "Nd", na: "Neodymium", m: "144.24", c: 7, r: 9, cat: "lanthanide" },
-            { n: 61, s: "Pm", na: "Promethium", m: "(145)", c: 8, r: 9, cat: "lanthanide" },
-            { n: 62, s: "Sm", na: "Samarium", m: "150.36", c: 9, r: 9, cat: "lanthanide" },
-            { n: 63, s: "Eu", na: "Europium", m: "151.96", c: 10, r: 9, cat: "lanthanide" },
-            { n: 64, s: "Gd", na: "Gadolinium", m: "157.25", c: 11, r: 9, cat: "lanthanide" },
-            { n: 65, s: "Tb", na: "Terbium", m: "158.93", c: 12, r: 9, cat: "lanthanide" },
-            { n: 66, s: "Dy", na: "Dysprosium", m: "162.50", c: 13, r: 9, cat: "lanthanide" },
-            { n: 67, s: "Ho", na: "Holmium", m: "164.93", c: 14, r: 9, cat: "lanthanide" },
-            { n: 68, s: "Er", na: "Erbium", m: "167.26", c: 15, r: 9, cat: "lanthanide" },
-            { n: 69, s: "Tm", na: "Thulium", m: "168.93", c: 16, r: 9, cat: "lanthanide" },
-            { n: 70, s: "Yb", na: "Ytterbium", m: "173.05", c: 17, r: 9, cat: "lanthanide" },
-            { n: 71, s: "Lu", na: "Lutetium", m: "174.97", c: 18, r: 9, cat: "lanthanide" },
-            { n: 72, s: "Hf", na: "Hafnium", m: "178.49", c: 4, r: 6, cat: "transition" },
-            { n: 73, s: "Ta", na: "Tantalum", m: "180.95", c: 5, r: 6, cat: "transition" },
-            { n: 74, s: "W", na: "Tungsten", m: "183.84", c: 6, r: 6, cat: "transition" },
-            { n: 75, s: "Re", na: "Rhenium", m: "186.21", c: 7, r: 6, cat: "transition" },
-            { n: 76, s: "Os", na: "Osmium", m: "190.23", c: 8, r: 6, cat: "transition" },
-            { n: 77, s: "Ir", na: "Iridium", m: "192.22", c: 9, r: 6, cat: "transition" },
-            { n: 78, s: "Pt", na: "Platinum", m: "195.08", c: 10, r: 6, cat: "transition" },
-            { n: 79, s: "Au", na: "Gold", m: "196.97", c: 11, r: 6, cat: "transition" },
-            { n: 80, s: "Hg", na: "Mercury", m: "200.59", c: 12, r: 6, cat: "transition" },
-            { n: 81, s: "Tl", na: "Thallium", m: "204.38", c: 13, r: 6, cat: "post" },
-            { n: 82, s: "Pb", na: "Lead", m: "207.2", c: 14, r: 6, cat: "post" },
-            { n: 83, s: "Bi", na: "Bismuth", m: "208.98", c: 15, r: 6, cat: "post" },
-            { n: 84, s: "Po", na: "Polonium", m: "(209)", c: 16, r: 6, cat: "metalloid" },
-            { n: 85, s: "At", na: "Astatine", m: "(210)", c: 17, r: 6, cat: "metalloid" },
-            { n: 86, s: "Rn", na: "Radon", m: "(222)", c: 18, r: 6, cat: "noble" },
-            { n: 87, s: "Fr", na: "Francium", m: "(223)", c: 1, r: 7, cat: "alkali" },
-            { n: 88, s: "Ra", na: "Radium", m: "(226)", c: 2, r: 7, cat: "alkaline" },
-            { n: 89, s: "Ac", na: "Actinium", m: "(227)", c: 3, r: 7, cat: "actinide" },
-            { n: 90, s: "Th", na: "Thorium", m: "232.04", c: 4, r: 7, cat: "actinide" },
-            { n: 91, s: "Pa", na: "Protactinium", m: "231.04", c: 5, r: 7, cat: "actinide" },
-            { n: 92, s: "U", na: "Uranium", m: "238.03", c: 6, r: 7, cat: "actinide" },
-            { n: 93, s: "Np", na: "Neptunium", m: "(237)", c: 7, r: 7, cat: "actinide" },
-            { n: 94, s: "Pu", na: "Plutonium", m: "(244)", c: 8, r: 7, cat: "actinide" },
-            { n: 95, s: "Am", na: "Americium", m: "(243)", c: 9, r: 7, cat: "actinide" },
-            { n: 96, s: "Cm", na: "Curium", m: "(247)", c: 10, r: 7, cat: "actinide" },
-            { n: 97, s: "Bk", na: "Berkelium", m: "(247)", c: 11, r: 7, cat: "actinide" },
-            { n: 98, s: "Cf", na: "Californium", m: "(251)", c: 12, r: 7, cat: "actinide" },
-            { n: 99, s: "Es", na: "Einsteinium", m: "(252)", c: 13, r: 7, cat: "actinide" },
-            { n: 100, s: "Fm", na: "Fermium", m: "(257)", c: 14, r: 7, cat: "actinide" },
-            { n: 101, s: "Md", na: "Mendelevium", m: "(258)", c: 15, r: 7, cat: "actinide" },
-            { n: 102, s: "No", na: "Nobelium", m: "(259)", c: 16, r: 7, cat: "actinide" },
-            { n: 103, s: "Lr", na: "Lawrencium", m: "(262)", c: 17, r: 7, cat: "actinide" },
-            { n: 104, s: "Rf", na: "Rutherfordium", m: "(267)", c: 4, r: 7, cat: "transition" },
-            { n: 105, s: "Db", na: "Dubnium", m: "(268)", c: 5, r: 7, cat: "transition" },
-            { n: 106, s: "Sg", na: "Seaborgium", m: "(269)", c: 6, r: 7, cat: "transition" },
-            { n: 107, s: "Bh", na: "Bohrium", m: "(270)", c: 7, r: 7, cat: "transition" },
-            { n: 108, s: "Hs", na: "Hassium", m: "(269)", c: 8, r: 7, cat: "transition" },
-            { n: 109, s: "Mt", na: "Meitnerium", m: "(278)", c: 9, r: 7, cat: "unknown" },
-            { n: 110, s: "Ds", na: "Darmstadtium", m: "(281)", c: 10, r: 7, cat: "unknown" },
-            { n: 111, s: "Rg", na: "Roentgenium", m: "(282)", c: 11, r: 7, cat: "unknown" },
-            { n: 112, s: "Cn", na: "Copernicium", m: "(285)", c: 12, r: 7, cat: "transition" },
-            { n: 113, s: "Nh", na: "Nihonium", m: "(286)", c: 13, r: 7, cat: "unknown" },
-            { n: 114, s: "Fl", na: "Flerovium", m: "(289)", c: 14, r: 7, cat: "post" },
-            { n: 115, s: "Mc", na: "Moscovium", m: "(290)", c: 15, r: 7, cat: "unknown" },
-            { n: 116, s: "Lv", na: "Livermorium", m: "(293)", c: 16, r: 7, cat: "unknown" },
-            { n: 117, s: "Ts", na: "Tennessine", m: "(294)", c: 17, r: 7, cat: "unknown" },
-            { n: 118, s: "Og", na: "Oganesson", m: "(294)", c: 18, r: 7, cat: "unknown" }
-        ];
-
-        // FULL 30-ELEMENT COLORFUL KINETIC REACTIVITY SERIES PAYLOAD ARRAY
-        const reactivitySeriesMatrix = [
-            { name: "Cesium", symbol: "Cs", cond: "Detonates instantly with cold water streams.", lvl: "extreme" },
-            { name: "Francium", symbol: "Fr", cond: "Highly active fragmentation layer vectors.", lvl: "extreme" },
-            { name: "Rubidium", symbol: "Rb", cond: "Spontaneous rapid ignition across atmosphere fields.", lvl: "extreme" },
-            { name: "Potassium", symbol: "K", cond: "Violent interaction loop; lilac emissions flare.", lvl: "high" },
-            { name: "Sodium", symbol: "Na", cond: "Exothermic deformation; moves rapidly across water.", lvl: "high" },
-            { name: "Lithium", symbol: "Li", cond: "Steady continuous gas release bubbles layer.", lvl: "high" },
-            { name: "Barium", symbol: "Ba", cond: "Strong reaction sequence acceleration grids.", lvl: "high" },
-            { name: "Radium", symbol: "Ra", cond: "Vigorous alpha radiation displacement path nodes.", lvl: "high" },
-            { name: "Strontium", symbol: "Sr", cond: "Rapid compound processing mapping loops.", lvl: "high" },
-            { name: "Calcium", symbol: "Ca", cond: "Moderate uniform displacement; precipitates quickly.", lvl: "high" },
-            { name: "Magnesium", symbol: "Mg", cond: "Stable in cold water; reactive with steam parameters.", lvl: "medium" },
-            { name: "Aluminum", symbol: "Al", cond: "Oxide passivation limits immediate kinetics.", lvl: "medium" },
-            { name: "Titanium", symbol: "Ti", cond: "High resistance matrix; attacked by hot concentration.", lvl: "medium" },
-            { name: "Manganese", symbol: "Mn", cond: "Steady displacement within concentrated acid lines.", lvl: "medium" },
-            { name: "Zinc", symbol: "Zn", cond: "Slow oxidation stream paths with steam vapors.", lvl: "medium" },
-            { name: "Chromium", symbol: "Cr", cond: "Passivates under atmospheric trace contacts.", lvl: "medium" },
-            { name: "Iron", symbol: "Fe", cond: "Forms standard oxidation layers recursively.", lvl: "medium" },
-            { name: "Cadmium", symbol: "Cd", cond: "Slow dissolution in warm acidic tracks.", lvl: "medium" },
-            { name: "Cobalt", symbol: "Co", cond: "Low speed activity tracking with dilute vectors.", lvl: "medium" },
-            { name: "Nickel", symbol: "Ni", cond: "Inert to aqueous phase baseline configurations.", lvl: "medium" },
-            { name: "Tin", symbol: "Sn", cond: "Requires strong concentrated thermal acid parsers.", lvl: "medium" },
-            { name: "Lead", symbol: "Pb", cond: "Forms protective outer insoluble compound crust.", lvl: "medium" },
-            { name: "Hydrogen", symbol: "H", cond: "Global zero-point reference baseline element.", lvl: "reference" },
-            { name: "Antimony", symbol: "Sb", cond: "Bypasses standard interaction with dilute arrays.", lvl: "low" },
-            { name: "Bismuth", symbol: "Bi", cond: "Oxidizes parameters only at elevated thermal limits.", lvl: "low" },
-            { name: "Copper", symbol: "Cu", cond: "Completely stable across general diagnostic vectors.", lvl: "low" },
-            { name: "Mercury", symbol: "Hg", cond: "Liquid configuration; dissolves in hot HNO3 lines.", lvl: "low" },
-            { name: "Silver", symbol: "Ag", cond: "Noble structure preserves surface grid atoms.", lvl: "low" },
-            { name: "Gold", symbol: "Au", cond: "Requires structured Aqua Regia solvent matrices.", lvl: "low" },
-            { name: "Platinum", symbol: "Pt", cond: "Absolute transformational structural inertia status.", lvl: "low" }
-        ];
-
-        function renderPeriodicTable() {
-            const grid = $('ptGrid'); if (!grid || grid.children.length > 0) return;
-            for (let r = 1; r <= 10; r++) {
-                for (let c = 1; c <= 18; c++) {
-                    const el = ptData.find(e => {
-                        if (e.n >= 57 && e.n <= 71) return r === 9 && c === (e.n - 57 + 4);
-                        if (e.n >= 89 && e.n <= 103) return r === 10 && c === (e.n - 89 + 4);
-                        return e.r === r && e.c === c;
-                    });
-                    if (el) {
-                        grid.innerHTML += `<div class="pt-el ${el.cat}" style="grid-column:${c}; grid-row:${r};" onclick="inspectElement(${el.n})"><span class="num">${el.n}</span><span class="sym">${el.s}</span></div>`;
+            // Trigger immediately for elements already in the viewport on load
+            setTimeout(() => {
+                revealElements.forEach(el => {
+                    if (el.getBoundingClientRect().top < window.innerHeight) {
+                        el.classList.add('active');
                     }
-                }
-            }
-        }
-        function inspectElement(n) {
-            const el = ptData.find(e => e.n === n);
-            if (el) { $('inspectName').innerText = `${el.na} (${el.s})`; $('inspectMass').innerText = el.m; $('inspectNum').innerText = el.n; $('inspectCat').innerText = el.cat.toUpperCase(); $('elementInspector').style.display = "block"; }
-        }
-
-        function renderFullReactivitySeries() {
-            const container = $('reactivityContainer'); if (!container || container.children.length > 0) return;
-            reactivitySeriesMatrix.forEach(item => {
-                container.innerHTML += `
-                    <div class="reac-row ${item.lvl}">
-                        <div><b style="color:var(--primary); font-size:0.9rem;">${item.name} (${item.symbol})</b><div style="font-size:0.75rem; color:var(--text-muted); margin-top:3px;">${item.cond}</div></div>
-                        <span style="font-size:0.6rem; text-transform:uppercase; font-weight:800; color:var(--text-muted);">${item.lvl}</span>
-                    </div>`;
-            });
-        }
-
-        // GOOGLE ROUTING SOURCING PIPELINES ENGINE INTERACTIVE MODAL ACTIONS
-        function setSearchMode(mode, btn) {
-            currentSearchMode = mode; btn.parentElement.querySelectorAll('.btn').forEach(b => b.className = 'btn btn-ghost'); btn.className = 'btn btn-primary';
-            if (mode === 'cards') { $('wikiResults').style.display = 'none'; $('flashcardsModule').style.display = 'block'; renderFlashcard(); }
-            else { $('flashcardsModule').style.display = 'none'; $('wikiResults').style.display = 'flex'; if ($('wikiSearch').value.trim()) searchKnowledgeBase(); }
-        }
-
-        async function searchKnowledgeBase() {
-            const query = $('wikiSearch').value.trim(); if (!query) return;
-            const results = $('wikiResults'); results.innerHTML = '<div style="text-align:center;padding:24px;"><i class="ph ph-spinner ph-spin" style="font-size:1.4rem;"></i><br><br>Directing data packet tracks map...</div>';
-
-            if (currentSearchMode === 'wikipedia') {
-                try {
-                    const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=4&srsearch=${encodeURIComponent(query)}`);
-                    const data = await res.json(); results.innerHTML = '';
-                    data.query.search.forEach(item => {
-                        results.innerHTML += `<div class="bento-card" onclick="window.open('https://en.wikipedia.org/?curid=${item.pageid}', '_blank')"><h4 style="margin:0 0 4px 0; color:var(--primary); font-size:0.95rem;">${item.title}</h4><div style="font-size:0.8rem; opacity:0.8; line-height:1.4;">${item.snippet}...</div></div>`;
-                    });
-                } catch (e) { results.innerHTML = 'Wikipedia trace error.'; }
-            } else if (currentSearchMode === 'academic') {
-                try {
-                    const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=4`);
-                    const data = await res.json(); results.innerHTML = '';
-                    data.docs.forEach(item => {
-                        results.innerHTML += `<div class="bento-card" onclick="window.open('https://openlibrary.org${item.key || ''}', '_blank')"><h4 style="margin:0 0 4px 0; color:var(--primary); font-size:0.95rem;">${item.title}</h4><div style="font-size:0.75rem; color:var(--text-muted);">Registrar: ${item.author_name ? item.author_name[0] : 'Unknown Author'}</div></div>`;
-                    });
-                } catch (e) { results.innerHTML = 'Academic catalog connection timeout.'; }
-            } else if (currentSearchMode === 'web' || currentSearchMode === 'image') {
-                if (!googleApiKey || !googleCx) {
-                    results.innerHTML = `<div class="bento-card" style="text-align:center;"><p style="font-size:0.8rem;margin-bottom:10px;">Google Context identifiers undefined inside storage structures array.</p><button class="btn btn-primary" onclick="window.open('https://google.com/search?q=' + encodeURIComponent(query),'_blank')">External Sourcing</button></div>`;
-                    return;
-                }
-                try {
-                    let url = `https://customsearch.googleapis.com/customsearch/v1?key=${googleApiKey}&cx=${googleCx}&q=${encodeURIComponent(query)}`;
-                    if (currentSearchMode === 'image') url += `&searchType=image`;
-                    const res = await fetch(url); const data = await res.json(); results.innerHTML = '';
-                    if (!data.items) { results.innerHTML = '<div style="text-align:center;font-size:0.8rem;">Zero indices matched.</div>'; return; }
-
-                    if (currentSearchMode === 'image') {
-                        googleSearchCacheItems = data.items;
-                        let grid = '<div class="img-search-grid">';
-                        data.items.forEach((item, index) => {
-                            grid += `<div class="img-search-card" onclick="openImagePreview(${index})"><img src="${item.link}" onerror="this.src='https://placehold.co/150';"><span>${item.title}</span></div>`;
-                        });
-                        grid += '</div>'; results.innerHTML = grid;
-                    } else {
-                        data.items.forEach(item => {
-                            results.innerHTML += `<div class="bento-card" onclick="window.open('${item.link}', '_blank')"><h4 style="margin:0 0 4px 0; color:var(--primary); font-size:0.95rem;">${item.title}</h4><div style="font-size:0.8rem; opacity:0.8;">${item.snippet}</div></div>`;
-                        });
-                    }
-                } catch (e) { results.innerHTML = 'Google Core cluster transaction exception.'; }
-            }
-        }
-
-        // IMAGE EXPAND PREVIEW ACTION TRACK
-        function openImagePreview(idx) {
-            const item = googleSearchCacheItems[idx]; if (!item) return;
-            $('previewModalImg').src = item.link; $('previewModalTitle').innerText = item.title;
-            $('previewModalLink').dataset.url = item.image?.contextLink || item.link;
-            $('imagePreviewModal').classList.add('active');
-        }
-        function closeImagePreview() { $('imagePreviewModal').classList.remove('active'); }
-
-        // COMPUTATIONAL VECTOR MATH ENGINES LOGIC ARRAY
-        async function queryGemini(p) {
-            if (!geminiApiKey) throw new Error("Key structure missing.");
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: p }] }] }) });
-            const data = await res.json(); return data.candidates[0].content.parts[0].text;
-        }
-        async function predictReaction() {
-            const input = $('chemReactants').value.trim(); if (!input) return;
-            const resDiv = $('reactResult'); resDiv.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Analyzing equation...';
-            try { const resp = await queryGemini(`Predict chemical reaction: ${input}. Balance expression sequence. Output ONLY final standard plaintext equation formula row string.`); resDiv.innerText = resp; } catch (e) { resDiv.innerText = "Trace fault: " + e.message; }
-        }
-        function calcGasLaw() {
-            const P = parseFloat($('gasP').value), V = parseFloat($('gasV').value), n = parseFloat($('gasN').value), T = parseFloat($('gasT').value), R = 0.0821;
-            let m = 0; if (isNaN(P)) m++; if (isNaN(V)) m++; if (isNaN(n)) m++; if (isNaN(T)) m++;
-            if (m !== 1) { $('gasRes').innerText = "Provide exactly 3 parameters variables."; return; }
-            if (isNaN(P)) $('gasRes').innerText = `P = ${((n * R * T) / V).toFixed(4)} atm`;
-            if (isNaN(V)) $('gasRes').innerText = `V = ${((n * R * T) / P).toFixed(4)} L`;
-            if (isNaN(n)) $('gasRes').innerText = `n = ${((P * V) / (R * T)).toFixed(4)} mol`;
-            if (isNaN(T)) $('gasRes').innerText = `T = ${((P * V) / (n * R)).toFixed(4)} K`;
-        }
-        function calcPh() {
-            const pH = parseFloat($('phVal').value); if (isNaN(pH) || pH < 0 || pH > 14) { $('phMetricsResult').innerText = "Limits domain: 0-14."; return; }
-            $('phMetricsResult').innerHTML = `pOH Matrix: ${(14 - pH).toFixed(2)}<br>[H+] Ion Metric: ${Math.pow(10, -pH).toExponential(2)} M<br>Nature: ${pH < 7 ? 'Acidic Solution' : pH === 7 ? 'Neutral Phase' : 'Alkaline Lattices'}`;
-        }
-        function calcKinematics() {
-            const u = parseFloat($('kinU').value), v = parseFloat($('kinV').value), a = parseFloat($('kinA').value), t = parseFloat($('kinT').value), s = parseFloat($('kinS').value);
-            let k = 0; if (!isNaN(u)) k++; if (!isNaN(v)) k++; if (!isNaN(a)) k++; if (!isNaN(t)) k++; if (!isNaN(s)) k++;
-            if (k !== 3) { $('kinRes').innerText = "Input exactly 3 parameters metrics indicators."; return; }
-            try {
-                let ru = u, rv = v, ra = a, rt = t, rs = s;
-                if (isNaN(v) && isNaN(s)) { rv = ru + ra * rt; rs = ru * rt + 0.5 * ra * rt * rt; }
-                else if (isNaN(v) && isNaN(t)) { rv = Math.sqrt(ru * ru + 2 * ra * rs); rt = (rv - u) / ra; }
-                $('kinRes').innerText = `Solved Vectors: u=${ru.toFixed(1)}, v=${rv.toFixed(1)}, a=${ra.toFixed(1)}, t=${rt.toFixed(1)}, s=${rs.toFixed(1)}`;
-            } catch (e) { $('kinRes').innerText = "Mathematical bounds exception."; }
-        }
-        function calcFinalGrade() {
-            const cur = parseFloat($('gpCurrent').value), tar = parseFloat($('gpTarget').value), w = parseFloat($('gpWeight').value) / 100;
-            if (isNaN(cur) || isNaN(tar) || isNaN(w)) return;
-            $('gpResult').innerText = `Required evaluation matrix score target: ${((tar - (1 - w) * cur) / w).toFixed(1)}%`;
-        }
-
-        // FINANCIAL TRACKER UTILS FLOW PAYLOADS
-        function switchUtilSubTab(tab) {
-            ['fin', 'math', 'arcade'].forEach(t => $('util-' + t).style.display = t === tab ? 'block' : 'none');
-            ['Fin', 'Math', 'Arcade'].forEach(t => $('subBtn' + t).classList.toggle('active', t.toLowerCase() === tab));
-        }
-        function renderFinanceLog() {
-            const list = $('expList'); list.innerHTML = ''; let total = 0;
-            expenses.forEach(e => { total += e.amt; list.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:0.8rem; padding:6px; border-bottom:1px solid var(--border-color)"><span>${e.desc} (${e.cat})</span><b>$${e.amt.toFixed(2)}</b></div>`; });
-            $('totalExp').innerText = total.toFixed(2);
-        }
-        function addExpense() {
-            const desc = $('expDesc').value, amt = parseFloat($('expAmount').value), cat = $('expCategory').value;
-            if (desc && !isNaN(amt)) { expenses.push({ id: Date.now(), desc, amt, cat }); localStorage.setItem('m_oasis_expenses', JSON.stringify(expenses)); $('expDesc').value = ''; $('expAmount').value = ''; renderFinanceLog(); }
-        }
-
-        // FLASHCARDS DECK DATA HANDLERS
-        let flashcards = JSON.parse(localStorage.getItem('m_oasis_flashcards')) || [{ q: "What is the powerhouse of the cell?", a: "Mitochondria Matrix" }, { q: "What is the derivative of x^2?", a: "2x Vector String" }];
-        let curCardIdx = 0;
-        function renderFlashcard() { if (flashcards.length === 0) return; $('fcShell').classList.remove('flipped'); $('fcFront').innerText = flashcards[curCardIdx].q; $('fcBack').innerText = flashcards[curCardIdx].a; }
-        function flipCard() { $('fcShell').classList.toggle('flipped'); }
-        function nextCard() { curCardIdx = (curCardIdx + 1) % flashcards.length; renderFlashcard(); }
-        function newFlashcard() { const q = prompt("Question sequence entry:"), a = prompt("Answer algorithm entry:"); if (q && a) { flashcards.push({ q, a }); localStorage.setItem('m_oasis_flashcards', JSON.stringify(flashcards)); renderFlashcard(); } }
-
-        // QUIZ ARCADES SYSTEMS MATRIX LOOP
-        let currentQuestions = [], curQIdx = 0, score = 0;
-        async function initQuiz(cat) {
-            $('quizSetup').style.display = 'none'; $('quizResult').style.display = 'none'; $('quizPlay').style.display = 'block';
-            $('qText').innerText = 'Initializing network handshake token exchange loops...'; $('qOptions').innerHTML = '';
-            try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=5&category=${cat}&type=multiple`); const data = await res.json();
-                currentQuestions = data.results; curQIdx = 0; score = 0; renderQuizQuestion();
-            } catch (e) { $('qText').innerText = "Gateway handshake interface fail cluster timeout."; }
-        }
-        function renderQuizQuestion() {
-            if (curQIdx >= currentQuestions.length) { $('quizPlay').style.display = 'none'; $('quizResult').style.display = 'block'; $('finalScore').innerText = score; $('xpGain').innerText = score * 20; addXP(score * 20); return; }
-            $('qNum').innerText = curQIdx + 1; $('qScore').innerText = score; $('qFeedback').innerText = '';
-            const q = currentQuestions[curQIdx]; $('qText').innerHTML = q.question;
-            let opts = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
-            const container = $('qOptions'); container.innerHTML = '';
-            opts.forEach(o => {
-                const row = document.createElement('div'); row.className = 'quiz-option'; row.innerHTML = `<span>${o}</span>`;
-                row.onclick = () => {
-                    if (o === q.correct_answer) { score++; row.classList.add('correct'); $('qFeedback').innerText = "Identity key matrix match."; }
-                    else { row.classList.add('wrong'); $('qFeedback').innerText = `Mismatch verification line. Expected: ${q.correct_answer}`; }
-                    document.querySelectorAll('.quiz-option').forEach(el => el.onclick = null); setTimeout(() => { curQIdx++; renderQuizQuestion(); }, 2000);
-                };
-                container.appendChild(row);
-            });
-        }
-        function resetQuiz() { $('quizResult').style.display = 'none'; $('quizSetup').style.display = 'block'; }
-
-        // VISUAL SYSTEM DESIGN RULES ENGINE 
-        function setAppTheme(theme) {
-            localStorage.setItem('m_oasis_app_theme', theme); document.body.className = '';
-            const root = document.documentElement;
-            if (theme === 'light') { root.style.setProperty('--bg-dark', '#f3f4f6'); root.style.setProperty('--text-main', '#0f172a'); root.style.setProperty('--glass-rgb', '0, 0, 0'); root.style.setProperty('--glass-surface', 'rgba(0,0,0,0.02)'); }
-            else if (theme === 'water') { root.style.setProperty('--bg-dark', '#01111f'); root.style.setProperty('--text-main', '#f8fafc'); root.style.setProperty('--glass-rgb', '255, 255, 255'); document.body.classList.add('theme-water'); }
-            else { root.style.setProperty('--bg-dark', '#060608'); root.style.setProperty('--text-main', '#f4f4f7'); root.style.setProperty('--glass-rgb', '255, 255, 255'); root.style.setProperty('--glass-surface', 'rgba(255,255,255,0.03)'); }
-            updateCanvasToolStyles();
-        }
-        function updateFont(font) { localStorage.setItem('m_oasis_font', font); document.documentElement.style.setProperty('--font-sans', font); }
-
-        // HIGH PERFORMANCE HARDWARE MOTION ACCELERATION BACKGROUND CANVAS LOGIC
-        let particlesArray = [];
-        function initParticlesArray() {
-            const cv = $('particlesCanvas'); cv.width = window.innerWidth; cv.height = window.innerHeight; particlesArray = [];
-            for (let i = 0; i < 14; i++) { particlesArray.push({ x: Math.random() * cv.width, y: Math.random() * cv.height, r: Math.random() * 2 + 1, dx: Math.random() * 0.4 - 0.2, dy: Math.random() * 0.4 - 0.2 }); }
-        }
-        function paintParticlesLoop() {
-            const cv = $('particlesCanvas'); const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height); ctx.fillStyle = 'rgba(255,255,255,0.1)';
-            particlesArray.forEach(p => { p.x += p.dx; p.y += p.dy; if (p.x < 0 || p.x > cv.width) p.dx = -p.dx; if (p.y < 0 || p.y > cv.height) p.dy = -p.dy; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); });
-            requestAnimationFrame(paintParticlesLoop);
-        }
-
-        window.onload = () => {
-            updateTime(); setInterval(updateTime, 1000); updateLevelMetrics();
-            renderTasks(); renderFinanceLog(); renderNotesOptions(); selectNote(notesData[0].id);
-            initParticlesArray(); paintParticlesLoop(); window.addEventListener('resize', () => { initParticlesArray(); resizeWbCanvas(); });
-            updateName(localStorage.getItem('m_oasis_name') || 'Oasis System Pilot');
-            const savedTheme = localStorage.getItem('m_oasis_app_theme') || 'dark'; setAppTheme(savedTheme); $('appThemeSelect').value = savedTheme;
-            const savedFont = localStorage.getItem('m_oasis_font') || "'Plus Jakarta Sans', sans-serif"; updateFont(savedFont); $('settingFont').value = savedFont;
-        };
+                });
+            }, 100);
+        });
     </script>
 </body>
 
